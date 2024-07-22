@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VasiyetApp.Views.LoginPage"
+             >
+    <StackLayout Padding="30" VerticalOptions="Center" HorizontalOptions="Center">
+        <Image Source="user_icon.png" WidthRequest="100" HeightRequest="100" HorizontalOptions="Center"/>
+
+        <Label HorizontalOptions="Center" Margin="0,20,0,30">
+            <Label.FormattedText>
+                <FormattedString>
+                    <Span Text="VASY" TextColor="#7ea1c1" FontSize="Medium"/>
+                    <Span Text="'ye Hoşgeldiniz" FontSize="Medium"/>
+                </FormattedString>
+            </Label.FormattedText>
+        </Label>
+
+        <Entry x:Name="usernameEntry" Placeholder="Kullanıcı Adı/E-posta" />
+        <Entry x:Name="passwordEntry" Placeholder="Şifre" IsPassword="True" Margin="0,5,0,0" />
+
+        <Button Text="GİRİŞ" 
+                BackgroundColor="#7ea1c1" 
+                TextColor="White"
+                Margin="0,10,0,0"
+                Clicked="OnLoginClicked"/>
+        <Button Text="KAYIT OL" 
+                BackgroundColor="#7ea1c1" 
+                TextColor="White"
+                Margin="0,10,0,0"
+                Clicked="OnRegisterClicked"/>
+
+        <Label Text="Şifrenizi mi unuttunuz?" 
+               TextColor="#7ea1c1"
+               HorizontalOptions="Center"
+               Margin="20,20,20,0">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnForgotPasswordClicked" />
+            </Label.GestureRecognizers>
+        </Label>
+    </StackLayout>
+</ContentPage>

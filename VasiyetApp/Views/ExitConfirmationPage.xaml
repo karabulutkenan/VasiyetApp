@@ -1,0 +1,9 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VasiyetApp.Views.ExitConfirmationPage">
+    <VerticalStackLayout Spacing="25" Padding="30" VerticalOptions="Center">
+        <Label Text="Çıkmak üzeresiniz, onaylıyor musunuz?" HorizontalOptions="Center"/>
+        <Button Text="Evet" Clicked="OnExitConfirmed"/>
+        <Button Text="Hayır" Clicked="OnCancel"/>
+    </VerticalStackLayout>
+</ContentPage>

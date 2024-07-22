@@ -1,0 +1,25 @@
+<Shell
+    x:Class="VasiyetApp.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:VasiyetApp.Views"
+    Shell.FlyoutBehavior="Disabled">
+    
+    <ShellContent Route="LoginPage" ContentTemplate="{DataTemplate local:LoginPage}" />
+    
+    <!-- Altta sabit TabBar konfigürasyonu -->
+    <TabBar>
+        <Tab Title="Ana Sayfa" Icon="home_icon.png">
+            <ShellContent Route="MainPage" ContentTemplate="{DataTemplate local:MainPage}" />
+        </Tab>
+        <Tab Title="Vasiyetlerim" Icon="will_icon.png">
+            <ShellContent Route="WillsPage" ContentTemplate="{DataTemplate local:WillsPage}" />
+        </Tab>
+        <Tab Title="Mezar Taşı" Icon="tombstone_icon.png">
+            <ShellContent Route="TombstonePage" ContentTemplate="{DataTemplate local:TombstonePage}" />
+        </Tab>
+        <Tab Title="Ayarlar" Icon="settings_icon.png">
+            <ShellContent Route="SettingsPage" ContentTemplate="{DataTemplate local:SettingsPage}" />
+        </Tab>
+    </TabBar>
+</Shell>

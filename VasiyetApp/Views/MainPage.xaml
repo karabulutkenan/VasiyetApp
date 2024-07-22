@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VasiyetApp.Views.MainPage">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Grid Grid.Row="0" BackgroundColor="LightGray" Padding="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <ImageButton Grid.Column="0" Source="exit_icon.png" HeightRequest="30" WidthRequest="30" Aspect="AspectFit"
+                         Clicked="OnExitIconTapped" />
+
+            <Label Grid.Column="1" Text="Ana Sayfa" FontSize="Medium" VerticalOptions="Center" HorizontalOptions="Center" />
+
+            <ImageButton Grid.Column="2" Source="user_icon.png" HeightRequest="30" WidthRequest="30" Aspect="AspectFit"
+                         Clicked="OnUserIconTapped" />
+        </Grid>
+
+        <!-- Main Content -->
+        <ScrollView Grid.Row="1">
+            <StackLayout Padding="10">
+                <Label Text="Hoşgeldin [kullanıcıadı]" FontSize="Medium" Padding="10" />
+                <Label Text="VASY ile Keşfedin" TextColor="#7ea1c1" FontSize="Medium" Padding="10" />
+
+                <!-- CarouselView -->
+                <CarouselView>
+                    <CarouselView.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>Vasiyet Başlığı 1</x:String>
+                            <x:String>Gönderilecek Vasi Adı 1</x:String>
+                            <x:String>Özeti 1</x:String>
+                            <x:String>Vasiyet Başlığı 2</x:String>
+                            <x:String>Gönderilecek Vasi Adı 2</x:String>
+                            <x:String>Özeti 2</x:String>
+                        </x:Array>
+                    </CarouselView.ItemsSource>
+                    <CarouselView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Image Source="carousel_bg.png" Aspect="AspectFill" />
+                                <Label Text="{Binding}" Margin="20" TextTransform="Uppercase" FontAttributes="Bold" />
+                            </Grid>
+                        </DataTemplate>
+                    </CarouselView.ItemTemplate>
+                </CarouselView>
+
+                <!-- Statik Bilgiler -->
+                <Frame BackgroundColor="#7ea1c1" Padding="10" CornerRadius="5">
+                    <Label Text="Vasiyetlerim: 15 Adet" TextColor="White"/>
+                </Frame>
+                <Frame BackgroundColor="#7ea1c1" Padding="10" CornerRadius="5">
+                    <Label Text="Vasilerim: 5 Kişi" TextColor="White"/>
+                </Frame>
+                <Frame BackgroundColor="#7ea1c1" Padding="10" CornerRadius="5">
+                    <Label Text="Uyarılar: Haftalık" TextColor="White"/>
+                </Frame>
+            </StackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>
