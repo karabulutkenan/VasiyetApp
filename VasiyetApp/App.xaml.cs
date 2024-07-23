@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using Microsoft.Maui.Storage;  // FileSystem için gerekli
+using VasiyetApp.Models;  // User modelini kullanmak için
 
 namespace VasiyetApp;
 
@@ -7,6 +8,9 @@ public partial class App : Application
 {
     // Veritabanı dosyasının yolunu düzelt
     public static string DbPath = Path.Combine(FileSystem.AppDataDirectory, "vasiyet.db");
+
+    // CurrentUser özelliği
+    public static User CurrentUser { get; set; }
 
     public App()
     {
@@ -45,6 +49,7 @@ public partial class App : Application
                     UserId INTEGER NOT NULL,
                     Title TEXT NOT NULL,
                     Details TEXT NOT NULL,
+                    FilePath TEXT,
                     GuardianId INTEGER,
                     FOREIGN KEY (UserId) REFERENCES Users (Id),
                     FOREIGN KEY (GuardianId) REFERENCES Users (Id)

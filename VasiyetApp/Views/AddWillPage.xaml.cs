@@ -1,11 +1,16 @@
 using System;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
+using VasiyetApp.Models;
+using VasiyetApp.Services;
 
 namespace VasiyetApp.Views
 {
     public partial class AddWillPage : ContentPage
     {
+        private string selectedFilePath;
+        public event EventHandler<Will> WillAdded;
+
         public AddWillPage()
         {
             InitializeComponent();
@@ -16,9 +21,9 @@ namespace VasiyetApp.Views
             var customFileType = new FilePickerFileType(
                 new Dictionary<DevicePlatform, IEnumerable<string>>
                 {
-                    { DevicePlatform.iOS, new[] { "public.image" } }, // iOS için örnek
-                    { DevicePlatform.Android, new[] { "image/*" } }, // Android için örnek
-                    { DevicePlatform.WinUI, new[] { ".jpg", ".png" } } // Windows için örnek
+                    { DevicePlatform.iOS, new[] { "public.image" } },
+                    { DevicePlatform.Android, new[] { "image/*" } },
+                    { DevicePlatform.WinUI, new[] { ".jpg", ".png" } }
                 });
 
             var options = new PickOptions
@@ -30,16 +35,46 @@ namespace VasiyetApp.Views
             var result = await FilePicker.Default.PickAsync(options);
             if (result != null)
             {
+                selectedFilePath = result.FullPath;
                 selectedFileName.Text = $"Seçilen dosya: {result.FileName}";
+            }
+            else
+            {
+                selectedFilePath = null;
+                selectedFileName.Text = "Seçilen dosya: Yok";
             }
         }
 
         private async void OnSaveClicked(object sender, EventArgs e)
         {
-            // Vasiyet kaydetme mantýðý burada gerçekleþir
+            // App.CurrentUser ve selectedFilePath null kontrolü
+            if (App.CurrentUser == null)
+            {
+                await DisplayAlert("Hata", "Oturum açmýþ kullanýcý bulunamadý.", "Tamam");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(selectedFilePath))
+            {
+                await DisplayAlert("Hata", "Lütfen bir dosya seçiniz.", "Tamam");
+                return;
+            }
+
+            var will = new Will
+            {
+                Title = titleEntry.Text,
+                Details = detailsEditor.Text,
+                FilePath = selectedFilePath,
+                UserId = App.CurrentUser.Id
+            };
+
+            DatabaseHelper.AddWill(will);
+
+            // WillAdded olayýný tetikle
+            WillAdded?.Invoke(this, will);
+
             await DisplayAlert("Baþarýlý", "Vasiyet baþarýyla kaydedildi.", "Tamam");
-            // Kaydetme iþlemi tamamlandýktan sonra ana sayfaya dön
-            await Shell.Current.GoToAsync("//MainPage");
+            await Shell.Current.Navigation.PopModalAsync();
         }
     }
 }

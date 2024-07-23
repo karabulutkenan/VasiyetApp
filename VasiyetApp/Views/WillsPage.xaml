@@ -3,9 +3,45 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="VasiyetApp.Views.WillsPage"
              Title="Vasiyetlerim">
-    <StackLayout Padding="20">
-        <Label Text="Vasiyetlerim sayfası burada yer alacak."
-               VerticalOptions="Center"
-               HorizontalOptions="Center" />
-    </StackLayout>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Grid Grid.Row="0" BackgroundColor="LightGray" Padding="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <ImageButton Grid.Column="0" Source="Resources/Images/exit_icon.png" HeightRequest="30" WidthRequest="30" Aspect="AspectFit"
+                         Clicked="OnExitIconTapped" />
+
+            <Label Grid.Column="1" Text="Vasiyetlerim" FontSize="Medium" VerticalOptions="Center" HorizontalOptions="Center" />
+
+            <ImageButton Grid.Column="2" Source="Resources/Images/user_icon.png" HeightRequest="30" WidthRequest="30" Aspect="AspectFit"
+                         Clicked="OnUserIconTapped" />
+        </Grid>
+
+        <!-- Main Content -->
+        <StackLayout Grid.Row="1" Padding="10">
+            <CollectionView x:Name="WillsCollectionView">
+                <!-- Define the item template for displaying wills -->
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <StackLayout Padding="10">
+                            <Label Text="{Binding Title}" FontSize="Medium" />
+                            <Label Text="{Binding Details}" FontSize="Small" />
+                            <Label Text="{Binding FileName}" FontSize="Small" />
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Button Text="Vasiyet Ekle" Clicked="OnAddWillClicked" />
+        </StackLayout>
+    </Grid>
 </ContentPage>

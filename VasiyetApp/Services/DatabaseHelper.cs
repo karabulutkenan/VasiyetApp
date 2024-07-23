@@ -26,8 +26,38 @@ namespace VasiyetApp.Services
                         Email TEXT UNIQUE,
                         Password TEXT
                     );
+
+                    CREATE TABLE IF NOT EXISTS Wills (
+                        Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        Title TEXT,
+                        Details TEXT,
+                        FilePath TEXT,
+                        UserId INTEGER,
+                        FOREIGN KEY(UserId) REFERENCES Users(Id)
+                    );
                 ";
                 command.ExecuteNonQuery();
+
+                // Veritabanı şemasını kontrol et ve gerekli sütunu ekle
+                command.CommandText = "PRAGMA table_info(Wills);";
+                using (var reader = command.ExecuteReader())
+                {
+                    bool filePathColumnExists = false;
+                    while (reader.Read())
+                    {
+                        if (reader.GetString(1) == "FilePath")
+                        {
+                            filePathColumnExists = true;
+                            break;
+                        }
+                    }
+
+                    if (!filePathColumnExists)
+                    {
+                        command.CommandText = "ALTER TABLE Wills ADD COLUMN FilePath TEXT;";
+                        command.ExecuteNonQuery();
+                    }
+                }
             }
         }
 
@@ -45,17 +75,44 @@ namespace VasiyetApp.Services
             }
         }
 
-        public static bool ValidateUser(string username, string password)
+        public static User ValidateUser(string username, string password)
         {
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {
                 connection.Open();
                 var command = connection.CreateCommand();
-                command.CommandText = "SELECT COUNT(1) FROM Users WHERE Username = @Username AND Password = @Password";
+                command.CommandText = "SELECT Id, Username, Email FROM Users WHERE Username = @Username AND Password = @Password";
                 command.Parameters.AddWithValue("@Username", username);
                 command.Parameters.AddWithValue("@Password", password);
-                var result = command.ExecuteScalar();
-                return (long)result > 0;
+
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        return new User
+                        {
+                            Id = reader.GetInt32(0),
+                            Username = reader.GetString(1),
+                            Email = reader.GetString(2)
+                        };
+                    }
+                }
+            }
+            return null;
+        }
+
+        public static void AddWill(Will will)
+        {
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = "INSERT INTO Wills (Title, Details, FilePath, UserId) VALUES (@Title, @Details, @FilePath, @UserId)";
+                command.Parameters.AddWithValue("@Title", will.Title);
+                command.Parameters.AddWithValue("@Details", will.Details);
+                command.Parameters.AddWithValue("@FilePath", will.FilePath);
+                command.Parameters.AddWithValue("@UserId", will.UserId);
+                command.ExecuteNonQuery();
             }
         }
     }

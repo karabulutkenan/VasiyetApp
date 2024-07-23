@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Maui.Controls;
 using VasiyetApp.Services;
+using VasiyetApp.Models;
 
 namespace VasiyetApp.Views
 {
@@ -21,9 +22,10 @@ namespace VasiyetApp.Views
             }
 
             // Kullanýcý doðrulamasý
-            bool isValid = DatabaseHelper.ValidateUser(usernameEntry.Text, passwordEntry.Text);
-            if (isValid)
+            User currentUser = DatabaseHelper.ValidateUser(usernameEntry.Text, passwordEntry.Text);
+            if (currentUser != null)
             {
+                App.CurrentUser = currentUser; // CurrentUser güncellemesi
                 await Shell.Current.GoToAsync("//MainPage");
             }
             else
