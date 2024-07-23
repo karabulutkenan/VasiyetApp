@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="VasiyetApp.Views.WillsPage"
-             Title="Vasiyetlerim">
+             x:Class="VasiyetApp.Views.WillsPage">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -10,7 +9,7 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <Grid Grid.Row="0" BackgroundColor="LightGray" Padding="10">
+        <Grid Grid.Row="0" Padding="10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
@@ -28,6 +27,7 @@
 
         <!-- Main Content -->
         <StackLayout Grid.Row="1" Padding="10">
+            <Button Text="Vasiyet Ekle" Clicked="OnAddWillClicked" />
             <CollectionView x:Name="WillsCollectionView">
                 <!-- Define the item template for displaying wills -->
                 <CollectionView.ItemTemplate>
@@ -40,8 +40,6 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-
-            <Button Text="Vasiyet Ekle" Clicked="OnAddWillClicked" />
         </StackLayout>
     </Grid>
 </ContentPage>

@@ -17,6 +17,7 @@ namespace VasiyetApp.Services
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
             {
                 connection.Open();
+
                 var command = connection.CreateCommand();
                 command.CommandText =
                 @"
@@ -38,7 +39,7 @@ namespace VasiyetApp.Services
                 ";
                 command.ExecuteNonQuery();
 
-                // Veritabanı şemasını kontrol et ve gerekli sütunu ekle
+                // FilePath sütununun varlığını kontrol et ve yoksa ekle
                 command.CommandText = "PRAGMA table_info(Wills);";
                 using (var reader = command.ExecuteReader())
                 {
@@ -114,6 +115,36 @@ namespace VasiyetApp.Services
                 command.Parameters.AddWithValue("@UserId", will.UserId);
                 command.ExecuteNonQuery();
             }
+        }
+
+        public static List<Will> GetWillsByUserId(int userId)
+        {
+            var wills = new List<Will>();
+
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = "SELECT Id, Title, Details, FilePath, UserId FROM Wills WHERE UserId = @UserId";
+                command.Parameters.AddWithValue("@UserId", userId);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        wills.Add(new Will
+                        {
+                            Id = reader.GetInt32(0),
+                            Title = reader.GetString(1),
+                            Details = reader.GetString(2),
+                            FilePath = reader.IsDBNull(3) ? null : reader.GetString(3),
+                            UserId = reader.GetInt32(4)
+                        });
+                    }
+                }
+            }
+
+            return wills;
         }
     }
 }

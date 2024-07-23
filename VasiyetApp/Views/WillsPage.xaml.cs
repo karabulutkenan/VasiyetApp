@@ -2,6 +2,7 @@ using Microsoft.Maui.Controls;
 using System;
 using System.Collections.ObjectModel;
 using VasiyetApp.Models;
+using VasiyetApp.Services;
 
 namespace VasiyetApp.Views
 {
@@ -41,7 +42,17 @@ namespace VasiyetApp.Views
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            // Will listesi güncellenebilir burada
+            LoadWills();
+        }
+
+        private void LoadWills()
+        {
+            Wills.Clear();
+            var willsFromDb = DatabaseHelper.GetWillsByUserId(App.CurrentUser.Id);
+            foreach (var will in willsFromDb)
+            {
+                Wills.Add(will);
+            }
         }
     }
 }
