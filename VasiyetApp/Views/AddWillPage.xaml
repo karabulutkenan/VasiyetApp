@@ -6,8 +6,14 @@
     <StackLayout Padding="30">
         <Entry x:Name="titleEntry" Placeholder="Vasiyet Başlığı"/>
         <Editor x:Name="detailsEditor" Placeholder="Vasiyet Detayları" AutoSize="TextChanges"/>
+        <Picker x:Name="guardianPicker" Title="Vasi Seçin">
+            <Picker.ItemDisplayBinding>
+                <Binding Path="Name" />
+            </Picker.ItemDisplayBinding>
+        </Picker>
         <Button x:Name="chooseFileButton" Text="Dosya Seç" Clicked="OnChooseFileClicked"/>
         <Label x:Name="selectedFileName" Text="Seçilen dosya: Yok"/>
         <Button x:Name="saveButton" Text="Kaydet" Clicked="OnSaveClicked"/>
+        <Button x:Name="addGuardianButton" Text="Vasi Ekle" Clicked="OnAddGuardianClicked"/>
     </StackLayout>
 </ContentPage>

@@ -59,13 +59,13 @@
 
                 <!-- Statik Bilgiler -->
                 <Frame BackgroundColor="#7ea1c1" Padding="10" Margin="5" CornerRadius="5">
-                    <Label Text="Vasiyetlerim: 15 Adet" FontSize="Large" TextColor="White"/>
+                    <Label Text="Vasiyetlerim: 15 Adet" FontSize="Title" TextColor="White"/>
                 </Frame>
                 <Frame BackgroundColor="#7ea1c1" Padding="10" Margin="5" CornerRadius="5">
-                    <Label Text="Vasilerim: 5 Kişi" FontSize="Large" TextColor="White"/>
+                    <Label Text="Vasilerim: 5 Kişi" FontSize="Title" TextColor="White"/>
                 </Frame>
                 <Frame BackgroundColor="#7ea1c1" Padding="10" Margin="5" CornerRadius="5">
-                    <Label Text="Uyarılar: Haftalık" FontSize="Large" TextColor="White"/>
+                    <Label Text="Uyarılar: Haftalık" FontSize="Title" TextColor="White"/>
                 </Frame>
             </StackLayout>
         </ScrollView>

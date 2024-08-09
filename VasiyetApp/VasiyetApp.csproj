@@ -24,12 +24,14 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">31.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+		<PackageIcon>user_icon.png</PackageIcon>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-android|AnyCPU'">
 		<AndroidKeyStore>True</AndroidKeyStore>
 		<AndroidSigningStorePass>111111</AndroidSigningStorePass>
 		<AndroidSigningKeyAlias>new-key-alias</AndroidSigningKeyAlias>
+		<AndroidSigningKeyStore>C:\Users\Kenan K\my-release-key.jks</AndroidSigningKeyStore>
 		<AndroidSigningKeyPass>111111</AndroidSigningKeyPass>
 	</PropertyGroup>
 
@@ -37,8 +39,26 @@
 		<AndroidKeyStore>True</AndroidKeyStore>
 		<AndroidSigningStorePass>111111</AndroidSigningStorePass>
 		<AndroidSigningKeyAlias>new-key-alias</AndroidSigningKeyAlias>
+		<AndroidSigningKeyStore>C:\Users\Kenan K\my-release-key.jks</AndroidSigningKeyStore>
 		<AndroidSigningKeyPass>111111</AndroidSigningKeyPass>
 		<AndroidPackageFormat>apk</AndroidPackageFormat>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-android33.0|AnyCPU'">
+	  <AndroidKeyStore>True</AndroidKeyStore>
+	  <AndroidSigningStorePass>111111</AndroidSigningStorePass>
+	  <AndroidSigningKeyAlias>my-key-alias</AndroidSigningKeyAlias>
+	  <AndroidSigningKeyStore>C:\Users\Kenan K\my-release-key.jks</AndroidSigningKeyStore>
+	  <AndroidSigningKeyPass>111111</AndroidSigningKeyPass>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-android33.0|AnyCPU'">
+	  <AndroidKeyStore>True</AndroidKeyStore>
+	  <AndroidSigningStorePass>111111</AndroidSigningStorePass>
+	  <AndroidSigningKeyAlias>my-key-alias</AndroidSigningKeyAlias>
+		<AndroidSigningKeyStore>C:\Users\Kenan K\my-release-key.jks</AndroidSigningKeyStore>
+	  <AndroidSigningKeyPass>111111</AndroidSigningKeyPass>
+	  <AndroidPackageFormat>apk</AndroidPackageFormat>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -69,7 +89,6 @@
 		<None Remove="Resources\Images\tombstone_icon.png" />
 		<None Remove="Resources\Images\user_icon.png" />
 		<None Remove="Resources\Images\will_icon.png" />
-		<None Remove="user_icon.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -87,6 +106,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<MauiXaml Update="Views\AddGuardianPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
 		<MauiXaml Update="Views\AddWillPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
@@ -108,6 +130,13 @@
 		<MauiXaml Update="Views\WillsPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="user_icon.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	</ItemGroup>
 
 </Project>

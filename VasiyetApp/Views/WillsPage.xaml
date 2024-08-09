@@ -28,6 +28,7 @@
         <!-- Main Content -->
         <StackLayout Grid.Row="1" Padding="10">
             <Button Text="Vasiyet Ekle" Clicked="OnAddWillClicked" />
+            <Button Text="Vasi Ekle" Clicked="OnAddGuardianClicked" />
             <CollectionView x:Name="WillsCollectionView">
                 <!-- Define the item template for displaying wills -->
                 <CollectionView.ItemTemplate>

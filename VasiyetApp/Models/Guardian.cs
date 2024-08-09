@@ -6,15 +6,11 @@ using System.Threading.Tasks;
 
 namespace VasiyetApp.Models
 {
-    public class Will
+    public class Guardian
     {
         public int Id { get; set; }
-        public string Title { get; set; }
-        public string Details { get; set; }
-        public string FilePath { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
         public int UserId { get; set; }
-        public int? GuardianId { get; set; }
     }
 }
-
-

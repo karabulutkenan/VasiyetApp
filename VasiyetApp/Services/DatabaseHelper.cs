@@ -28,37 +28,26 @@ namespace VasiyetApp.Services
                         Password TEXT
                     );
 
+                    CREATE TABLE IF NOT EXISTS Guardians (
+                        Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        Name TEXT,
+                        Email TEXT,
+                        UserId INTEGER,
+                        FOREIGN KEY(UserId) REFERENCES Users(Id)
+                    );
+
                     CREATE TABLE IF NOT EXISTS Wills (
                         Id INTEGER PRIMARY KEY AUTOINCREMENT,
                         Title TEXT,
                         Details TEXT,
                         FilePath TEXT,
                         UserId INTEGER,
-                        FOREIGN KEY(UserId) REFERENCES Users(Id)
+                        GuardianId INTEGER,
+                        FOREIGN KEY(UserId) REFERENCES Users(Id),
+                        FOREIGN KEY(GuardianId) REFERENCES Guardians(Id)
                     );
                 ";
                 command.ExecuteNonQuery();
-
-                // FilePath sütununun varlığını kontrol et ve yoksa ekle
-                command.CommandText = "PRAGMA table_info(Wills);";
-                using (var reader = command.ExecuteReader())
-                {
-                    bool filePathColumnExists = false;
-                    while (reader.Read())
-                    {
-                        if (reader.GetString(1) == "FilePath")
-                        {
-                            filePathColumnExists = true;
-                            break;
-                        }
-                    }
-
-                    if (!filePathColumnExists)
-                    {
-                        command.CommandText = "ALTER TABLE Wills ADD COLUMN FilePath TEXT;";
-                        command.ExecuteNonQuery();
-                    }
-                }
             }
         }
 
@@ -108,11 +97,12 @@ namespace VasiyetApp.Services
             {
                 connection.Open();
                 var command = connection.CreateCommand();
-                command.CommandText = "INSERT INTO Wills (Title, Details, FilePath, UserId) VALUES (@Title, @Details, @FilePath, @UserId)";
+                command.CommandText = "INSERT INTO Wills (Title, Details, FilePath, UserId, GuardianId) VALUES (@Title, @Details, @FilePath, @UserId, @GuardianId)";
                 command.Parameters.AddWithValue("@Title", will.Title);
                 command.Parameters.AddWithValue("@Details", will.Details);
                 command.Parameters.AddWithValue("@FilePath", will.FilePath);
                 command.Parameters.AddWithValue("@UserId", will.UserId);
+                command.Parameters.AddWithValue("@GuardianId", will.GuardianId);
                 command.ExecuteNonQuery();
             }
         }
@@ -125,7 +115,7 @@ namespace VasiyetApp.Services
             {
                 connection.Open();
                 var command = connection.CreateCommand();
-                command.CommandText = "SELECT Id, Title, Details, FilePath, UserId FROM Wills WHERE UserId = @UserId";
+                command.CommandText = "SELECT Id, Title, Details, FilePath, UserId, GuardianId FROM Wills WHERE UserId = @UserId";
                 command.Parameters.AddWithValue("@UserId", userId);
 
                 using (var reader = command.ExecuteReader())
@@ -138,13 +128,70 @@ namespace VasiyetApp.Services
                             Title = reader.GetString(1),
                             Details = reader.GetString(2),
                             FilePath = reader.IsDBNull(3) ? null : reader.GetString(3),
-                            UserId = reader.GetInt32(4)
+                            UserId = reader.GetInt32(4),
+                            GuardianId = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5)
                         });
                     }
                 }
             }
 
             return wills;
+        }
+
+        public static void AddGuardian(Guardian guardian)
+        {
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = "INSERT INTO Guardians (Name, Email, UserId) VALUES (@Name, @Email, @UserId)";
+                command.Parameters.AddWithValue("@Name", guardian.Name);
+                command.Parameters.AddWithValue("@Email", guardian.Email);
+                command.Parameters.AddWithValue("@UserId", guardian.UserId);
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public static List<Guardian> GetGuardiansByUserId(int userId)
+        {
+            var guardians = new List<Guardian>();
+
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = "SELECT Id, Name, Email, UserId FROM Guardians WHERE UserId = @UserId";
+                command.Parameters.AddWithValue("@UserId", userId);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        guardians.Add(new Guardian
+                        {
+                            Id = reader.GetInt32(0),
+                            Name = reader.GetString(1),
+                            Email = reader.GetString(2),
+                            UserId = reader.GetInt32(3)
+                        });
+                    }
+                }
+            }
+
+            return guardians;
+        }
+
+        public static bool HasGuardians(int userId)
+        {
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = "SELECT COUNT(1) FROM Guardians WHERE UserId = @UserId";
+                command.Parameters.AddWithValue("@UserId", userId);
+                var result = command.ExecuteScalar();
+                return (long)result > 0;
+            }
         }
     }
 }
