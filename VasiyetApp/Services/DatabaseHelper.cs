@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using VasiyetApp.Models;
 
@@ -19,6 +16,8 @@ namespace VasiyetApp.Services
                 connection.Open();
 
                 var command = connection.CreateCommand();
+
+                // Kullanıcılar tablosunu oluştur
                 command.CommandText =
                 @"
                     CREATE TABLE IF NOT EXISTS Users (
@@ -27,27 +26,58 @@ namespace VasiyetApp.Services
                         Email TEXT UNIQUE,
                         Password TEXT
                     );
-
-                    CREATE TABLE IF NOT EXISTS Guardians (
-                        Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        Name TEXT,
-                        Email TEXT,
-                        UserId INTEGER,
-                        FOREIGN KEY(UserId) REFERENCES Users(Id)
-                    );
-
-                    CREATE TABLE IF NOT EXISTS Wills (
-                        Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        Title TEXT,
-                        Details TEXT,
-                        FilePath TEXT,
-                        UserId INTEGER,
-                        GuardianId INTEGER,
-                        FOREIGN KEY(UserId) REFERENCES Users(Id),
-                        FOREIGN KEY(GuardianId) REFERENCES Guardians(Id)
-                    );
                 ";
                 command.ExecuteNonQuery();
+
+                // Guardians tablosunun var olup olmadığını kontrol et
+                if (!IsTableExists("Guardians"))
+                {
+                    // Guardians tablosunu oluştur
+                    command.CommandText =
+                    @"
+                        CREATE TABLE IF NOT EXISTS Guardians (
+                            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            Name TEXT,
+                            Email TEXT,
+                            UserId INTEGER,
+                            FOREIGN KEY(UserId) REFERENCES Users(Id)
+                        );
+                    ";
+                    command.ExecuteNonQuery();
+                }
+
+                // Wills tablosunun var olup olmadığını kontrol et
+                if (!IsTableExists("Wills"))
+                {
+                    // Wills tablosunu oluştur
+                    command.CommandText =
+                    @"
+                        CREATE TABLE IF NOT EXISTS Wills (
+                            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            Title TEXT,
+                            Details TEXT,
+                            FilePath TEXT,
+                            UserId INTEGER,
+                            GuardianId INTEGER,
+                            FOREIGN KEY(UserId) REFERENCES Users(Id),
+                            FOREIGN KEY(GuardianId) REFERENCES Guardians(Id)
+                        );
+                    ";
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        // Tablo var mı yok mu kontrol etme metodu
+        public static bool IsTableExists(string tableName)
+        {
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = $"SELECT name FROM sqlite_master WHERE type='table' AND name='{tableName}';";
+                var result = command.ExecuteScalar();
+                return result != null;
             }
         }
 

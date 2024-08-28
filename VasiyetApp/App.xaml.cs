@@ -54,6 +54,14 @@ public partial class App : Application
                     FOREIGN KEY (UserId) REFERENCES Users (Id),
                     FOREIGN KEY (GuardianId) REFERENCES Users (Id)
                 );
+
+                    CREATE TABLE IF NOT EXISTS Guardians (
+                            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            Name TEXT,
+                            Email TEXT,
+                            UserId INTEGER,
+                            FOREIGN KEY(UserId) REFERENCES Users(Id)
+                        );
             ";
             command.ExecuteNonQuery();
         }

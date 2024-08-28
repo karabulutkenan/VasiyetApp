@@ -31,18 +31,9 @@
                 <Label Text="Hoşgeldin [kullanıcıadı]" FontSize="Medium" Padding="10" HorizontalOptions="Center" />
                 <Label Text="VASY ile Keşfedin" TextColor="#7ea1c1" FontSize="Large" FontAttributes="Bold" Padding="10" HorizontalOptions="Center" />
                 <Label Text="VASİYETLERİM" FontSize="Small" Margin="5" FontAttributes="Bold" />
+
                 <!-- CarouselView -->
-                <CarouselView>
-                    <CarouselView.ItemsSource>
-                        <x:Array Type="{x:Type x:String}">
-                            <x:String>VASİYET 1</x:String>
-                            <x:String>VASİYET 2</x:String>
-                            <x:String>VASİYET 3</x:String>
-                            <x:String>VASİYET 4</x:String>
-                            <x:String>VASİYET 5</x:String>
-                            
-                        </x:Array>
-                    </CarouselView.ItemsSource>
+                <CarouselView x:Name="WillsCarouselView">
                     <CarouselView.ItemTemplate>
                         <DataTemplate>
                             <Grid>
@@ -51,7 +42,11 @@
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
                                 <Image Source="carousel_bg.png" Aspect="AspectFill" />
-                                <Label Text="{Binding}" Margin="20" TextTransform="Uppercase" FontSize="Large" TextColor="White"  FontAttributes="Bold" />
+                                <StackLayout Margin="20">
+                                    <Label Text="{Binding Title}" FontSize="Large" TextColor="White"  FontAttributes="Bold" />
+                                    <Label Text="{Binding Details}" FontSize="Medium" TextColor="White" />
+                                    <Label Text="{Binding GuardianName}" FontSize="Small" TextColor="White" />
+                                </StackLayout>
                             </Grid>
                         </DataTemplate>
                     </CarouselView.ItemTemplate>
@@ -59,10 +54,10 @@
 
                 <!-- Statik Bilgiler -->
                 <Frame BackgroundColor="#7ea1c1" Padding="10" Margin="5" CornerRadius="5">
-                    <Label Text="Vasiyetlerim: 15 Adet" FontSize="Title" TextColor="White"/>
+                    <Label x:Name="WillsCountLabel" FontSize="Title" TextColor="White"/>
                 </Frame>
                 <Frame BackgroundColor="#7ea1c1" Padding="10" Margin="5" CornerRadius="5">
-                    <Label Text="Vasilerim: 5 Kişi" FontSize="Title" TextColor="White"/>
+                    <Label x:Name="GuardiansCountLabel" FontSize="Title" TextColor="White"/>
                 </Frame>
                 <Frame BackgroundColor="#7ea1c1" Padding="10" Margin="5" CornerRadius="5">
                     <Label Text="Uyarılar: Haftalık" FontSize="Title" TextColor="White"/>

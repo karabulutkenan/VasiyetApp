@@ -14,6 +14,6 @@
         <Button x:Name="chooseFileButton" Text="Dosya Seç" Clicked="OnChooseFileClicked"/>
         <Label x:Name="selectedFileName" Text="Seçilen dosya: Yok"/>
         <Button x:Name="saveButton" Text="Kaydet" Clicked="OnSaveClicked"/>
-        <Button x:Name="addGuardianButton" Text="Vasi Ekle" Clicked="OnAddGuardianClicked"/>
+        
     </StackLayout>
 </ContentPage>

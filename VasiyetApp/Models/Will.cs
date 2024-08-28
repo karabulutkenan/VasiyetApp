@@ -14,6 +14,7 @@ namespace VasiyetApp.Models
         public string FilePath { get; set; }
         public int UserId { get; set; }
         public int? GuardianId { get; set; }
+        public string GuardianName { get; set; }
     }
 }
 
