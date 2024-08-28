@@ -39,6 +39,10 @@ public partial class App : Application
             @"
                 CREATE TABLE IF NOT EXISTS Users (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Name TEXT,
+                    Surname TEXT,
+                    TCKN TEXT,
+                    Phone TEXT,
                     Username TEXT NOT NULL,
                     Password TEXT NOT NULL,
                     Email TEXT NOT NULL

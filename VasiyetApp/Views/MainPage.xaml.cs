@@ -15,12 +15,27 @@ namespace VasiyetApp.Views
             InitializeComponent();
             Wills = new ObservableCollection<Will>();
             WillsCarouselView.ItemsSource = Wills;
-            LoadData();
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            LoadData(); // Sayfa her göründüðünde verileri yenile
         }
 
         private void LoadData()
         {
-            var willsFromDb = DatabaseHelper.GetWillsByUserId(App.CurrentUser.Id);
+            var currentUser = App.CurrentUser;
+            if (currentUser != null)
+            {
+                WelcomeLabel.Text = $"Hoþgeldin, {currentUser.Name}!"; // Name özelliðini kullanýyoruz
+            }
+            else
+            {
+                WelcomeLabel.Text = "Hoþgeldin!";
+            }
+
+            var willsFromDb = DatabaseHelper.GetWillsByUserId(currentUser.Id);
             Wills.Clear();
             foreach (var will in willsFromDb)
             {
@@ -34,7 +49,7 @@ namespace VasiyetApp.Views
             }
 
             WillsCountLabel.Text = $"Vasiyetlerim: {Wills.Count} Adet";
-            GuardiansCountLabel.Text = $"Vasilerim: {DatabaseHelper.GetGuardiansByUserId(App.CurrentUser.Id).Count} Kiþi";
+            GuardiansCountLabel.Text = $"Vasilerim: {DatabaseHelper.GetGuardiansByUserId(currentUser.Id).Count} Kiþi";
         }
 
         private async void OnUserIconTapped(object sender, EventArgs e)

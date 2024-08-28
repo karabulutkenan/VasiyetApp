@@ -21,10 +21,14 @@ namespace VasiyetApp.Services
                 command.CommandText =
                 @"
                     CREATE TABLE IF NOT EXISTS Users (
-                        Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        Username TEXT UNIQUE,
-                        Email TEXT UNIQUE,
-                        Password TEXT
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Name TEXT,
+                    Surname TEXT,
+                    TCKN TEXT,
+                    Phone TEXT,
+                    Username TEXT NOT NULL,
+                    Password TEXT NOT NULL,
+                    Email TEXT NOT NULL
                     );
                 ";
                 command.ExecuteNonQuery();
@@ -87,8 +91,12 @@ namespace VasiyetApp.Services
             {
                 connection.Open();
                 var command = connection.CreateCommand();
-                command.CommandText = "INSERT INTO Users (Username, Email, Password) VALUES (@Username, @Email, @Password)";
+                command.CommandText = "INSERT INTO Users (Username, Name, Surname, TCKN, Phone, Email, Password) VALUES (@Username, @Name, @Surname, @TCKN, @Phone, @Email, @Password)";
                 command.Parameters.AddWithValue("@Username", user.Username);
+                command.Parameters.AddWithValue("@Name", user.Name);
+                command.Parameters.AddWithValue("@Surname", user.Surname);
+                command.Parameters.AddWithValue("@TCKN", user.TCKN);
+                command.Parameters.AddWithValue("@Phone", user.Phone);
                 command.Parameters.AddWithValue("@Email", user.Email);
                 command.Parameters.AddWithValue("@Password", user.Password);
                 command.ExecuteNonQuery();
@@ -101,7 +109,7 @@ namespace VasiyetApp.Services
             {
                 connection.Open();
                 var command = connection.CreateCommand();
-                command.CommandText = "SELECT Id, Username, Email FROM Users WHERE Username = @Username AND Password = @Password";
+                command.CommandText = "SELECT Id, Name, Username, Email FROM Users WHERE Username = @Username AND Password = @Password";
                 command.Parameters.AddWithValue("@Username", username);
                 command.Parameters.AddWithValue("@Password", password);
 
@@ -112,8 +120,9 @@ namespace VasiyetApp.Services
                         return new User
                         {
                             Id = reader.GetInt32(0),
-                            Username = reader.GetString(1),
-                            Email = reader.GetString(2)
+                            Name = reader.GetString(1),
+                            Username = reader.GetString(2),
+                            Email = reader.GetString(3)
                         };
                     }
                 }
@@ -159,7 +168,8 @@ namespace VasiyetApp.Services
                             Details = reader.GetString(2),
                             FilePath = reader.IsDBNull(3) ? null : reader.GetString(3),
                             UserId = reader.GetInt32(4),
-                            GuardianId = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5)
+                            GuardianId = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5),
+                            GuardianName = GetGuardianNameById(reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5)) // GuardianName ekleme
                         });
                     }
                 }
@@ -221,6 +231,24 @@ namespace VasiyetApp.Services
                 command.Parameters.AddWithValue("@UserId", userId);
                 var result = command.ExecuteScalar();
                 return (long)result > 0;
+            }
+        }
+
+        // Guardian ID'ye göre vasi adını döndüren metot
+        public static string GetGuardianNameById(int? guardianId)
+        {
+            if (guardianId == null)
+                return "Bilinmiyor";
+
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = "SELECT Name FROM Guardians WHERE Id = @Id";
+                command.Parameters.AddWithValue("@Id", guardianId);
+
+                var result = command.ExecuteScalar();
+                return result != null ? result.ToString() : "Bilinmiyor";
             }
         }
     }

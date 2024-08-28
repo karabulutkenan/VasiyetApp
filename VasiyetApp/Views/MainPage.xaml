@@ -28,12 +28,12 @@
         <!-- Main Content -->
         <ScrollView Grid.Row="1">
             <StackLayout Padding="10">
-                <Label Text="Hoşgeldin [kullanıcıadı]" FontSize="Medium" Padding="10" HorizontalOptions="Center" />
+                <Label x:Name="WelcomeLabel" FontSize="Medium" Padding="10" HorizontalOptions="Center" />
                 <Label Text="VASY ile Keşfedin" TextColor="#7ea1c1" FontSize="Large" FontAttributes="Bold" Padding="10" HorizontalOptions="Center" />
                 <Label Text="VASİYETLERİM" FontSize="Small" Margin="5" FontAttributes="Bold" />
 
                 <!-- CarouselView -->
-                <CarouselView x:Name="WillsCarouselView">
+                <CarouselView x:Name="WillsCarouselView" IndicatorView="WillsIndicatorView">
                     <CarouselView.ItemTemplate>
                         <DataTemplate>
                             <Grid>
@@ -51,6 +51,9 @@
                         </DataTemplate>
                     </CarouselView.ItemTemplate>
                 </CarouselView>
+
+                <!-- IndicatorView -->
+                <IndicatorView x:Name="WillsIndicatorView" IndicatorColor="Gray" SelectedIndicatorColor="Black" HorizontalOptions="Center" />
 
                 <!-- Statik Bilgiler -->
                 <Frame BackgroundColor="#7ea1c1" Padding="10" Margin="5" CornerRadius="5">
