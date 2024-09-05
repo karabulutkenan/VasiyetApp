@@ -63,7 +63,10 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+		<MauiIcon Include="Resources\AppIcon\user_icon.png" ForegroundFile="Resources\AppIcon\user_icon.png" />
+		<MauiIcon Include="Resources\mipmap\user_icon.png">
+		  <ForegroundFile>Resources\AppIcon\user_icon.png</ForegroundFile>
+		</MauiIcon>
 
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
@@ -82,6 +85,7 @@
 	<ItemGroup>
 		<None Remove="Platforms\Android\Resources\mipmap\appicon.png" />
 		<None Remove="Platforms\Android\Resources\mipmap\appicon_round.png" />
+		<None Remove="Resources\AppIcon\user_icon.png" />
 		<None Remove="Resources\Images\carousel_bg.png" />
 		<None Remove="Resources\Images\exit_icon.png" />
 		<None Remove="Resources\Images\home_icon.png" />
@@ -89,9 +93,11 @@
 		<None Remove="Resources\Images\tombstone_icon.png" />
 		<None Remove="Resources\Images\user_icon.png" />
 		<None Remove="Resources\Images\will_icon.png" />
+		<None Remove="Resources\mipmap\user_icon.png" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<MauiImage Include="Resources\AppIcon\user_icon.png" />
 		<MauiImage Include="user_icon.png" />
 		<MauiImage Include="Resources\Images\carousel_bg.png" />
 		<MauiImage Include="Resources\Images\exit_icon.png" />
