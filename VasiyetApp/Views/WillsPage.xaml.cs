@@ -72,5 +72,19 @@ namespace VasiyetApp.Views
                 Wills.Add(will);
             }
         }
+
+        private async void OnWillSelected(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.CurrentSelection.Count > 0)
+            {
+                var selectedWill = e.CurrentSelection[0] as Will;
+                if (selectedWill != null)
+                {
+                    var editWillPage = new EditWillPage(selectedWill);
+                    await Navigation.PushModalAsync(editWillPage);
+                }
+            }
+        }
+
     }
 }
