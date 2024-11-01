@@ -44,7 +44,7 @@ namespace VasiyetApp.Views
 
         private void OnGuardianAdded(object sender, Guardian newGuardian)
         {
-            // Burada gerekli iþlemler yapýlabilir, örneðin vasilerin listesi güncellenebilir.
+            // Gerekli iþlemler yapýlabilir
         }
 
         private async void OnExitIconTapped(object sender, EventArgs e)
@@ -73,18 +73,13 @@ namespace VasiyetApp.Views
             }
         }
 
-        private async void OnWillSelected(object sender, SelectionChangedEventArgs e)
+        private async void OnWillTapped(object sender, EventArgs e)
         {
-            if (e.CurrentSelection.Count > 0)
+            if (sender is Frame frame && frame.BindingContext is Will selectedWill)
             {
-                var selectedWill = e.CurrentSelection[0] as Will;
-                if (selectedWill != null)
-                {
-                    var editWillPage = new EditWillPage(selectedWill);
-                    await Navigation.PushModalAsync(editWillPage);
-                }
+                var editWillPage = new EditWillPage(selectedWill);
+                await Navigation.PushModalAsync(editWillPage);
             }
         }
-
     }
 }

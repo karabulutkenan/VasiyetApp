@@ -17,7 +17,6 @@ namespace VasiyetApp.Services
 
                 var command = connection.CreateCommand();
 
-                // Kullanıcılar tablosunu oluştur
                 command.CommandText =
                 @"
                     CREATE TABLE IF NOT EXISTS Users (
@@ -33,10 +32,8 @@ namespace VasiyetApp.Services
                 ";
                 command.ExecuteNonQuery();
 
-                // Guardians tablosunun var olup olmadığını kontrol et
                 if (!IsTableExists("Guardians"))
                 {
-                    // Guardians tablosunu oluştur
                     command.CommandText =
                     @"
                         CREATE TABLE IF NOT EXISTS Guardians (
@@ -50,10 +47,8 @@ namespace VasiyetApp.Services
                     command.ExecuteNonQuery();
                 }
 
-                // Wills tablosunun var olup olmadığını kontrol et
                 if (!IsTableExists("Wills"))
                 {
-                    // Wills tablosunu oluştur
                     command.CommandText =
                     @"
                         CREATE TABLE IF NOT EXISTS Wills (
@@ -72,7 +67,6 @@ namespace VasiyetApp.Services
             }
         }
 
-        // Tablo var mı yok mu kontrol etme metodu
         public static bool IsTableExists(string tableName)
         {
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))
@@ -169,7 +163,7 @@ namespace VasiyetApp.Services
                             FilePath = reader.IsDBNull(3) ? null : reader.GetString(3),
                             UserId = reader.GetInt32(4),
                             GuardianId = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5),
-                            GuardianName = GetGuardianNameById(reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5)) // GuardianName ekleme
+                            GuardianName = GetGuardianNameById(reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5))
                         });
                     }
                 }
@@ -188,6 +182,90 @@ namespace VasiyetApp.Services
                 command.Parameters.AddWithValue("@Name", guardian.Name);
                 command.Parameters.AddWithValue("@Email", guardian.Email);
                 command.Parameters.AddWithValue("@UserId", guardian.UserId);
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public static List<Guardian> GetGuardians()
+        {
+            var guardians = new List<Guardian>();
+
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = "SELECT Id, Name FROM Guardians";
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        guardians.Add(new Guardian
+                        {
+                            Id = reader.GetInt32(0),
+                            Name = reader.GetString(1)
+                        });
+                    }
+                }
+            }
+
+            return guardians;
+        }
+
+        public static bool HasGuardians(int userId)
+        {
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = "SELECT COUNT(1) FROM Guardians WHERE UserId = @UserId";
+                command.Parameters.AddWithValue("@UserId", userId);
+                var result = command.ExecuteScalar();
+                return (long)result > 0;
+            }
+        }
+
+        public static string GetGuardianNameById(int? guardianId)
+        {
+            if (guardianId == null)
+                return "Bilinmiyor";
+
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = "SELECT Name FROM Guardians WHERE Id = @Id";
+                command.Parameters.AddWithValue("@Id", guardianId);
+
+                var result = command.ExecuteScalar();
+                return result != null ? result.ToString() : "Bilinmiyor";
+            }
+        }
+
+        public static void UpdateWill(Will will)
+        {
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = "UPDATE Wills SET Title = @Title, Details = @Details, FilePath = @FilePath, GuardianId = @GuardianId WHERE Id = @Id";
+                command.Parameters.AddWithValue("@Title", will.Title);
+                command.Parameters.AddWithValue("@Details", will.Details);
+                command.Parameters.AddWithValue("@FilePath", will.FilePath);
+                command.Parameters.AddWithValue("@GuardianId", will.GuardianId);
+                command.Parameters.AddWithValue("@Id", will.Id);
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public static void DeleteWill(int willId)
+        {
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = "DELETE FROM Wills WHERE Id = @Id";
+                command.Parameters.AddWithValue("@Id", willId);
                 command.ExecuteNonQuery();
             }
         }
@@ -221,35 +299,5 @@ namespace VasiyetApp.Services
             return guardians;
         }
 
-        public static bool HasGuardians(int userId)
-        {
-            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
-            {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = "SELECT COUNT(1) FROM Guardians WHERE UserId = @UserId";
-                command.Parameters.AddWithValue("@UserId", userId);
-                var result = command.ExecuteScalar();
-                return (long)result > 0;
-            }
-        }
-
-        // Guardian ID'ye göre vasi adını döndüren metot
-        public static string GetGuardianNameById(int? guardianId)
-        {
-            if (guardianId == null)
-                return "Bilinmiyor";
-
-            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
-            {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = "SELECT Name FROM Guardians WHERE Id = @Id";
-                command.Parameters.AddWithValue("@Id", guardianId);
-
-                var result = command.ExecuteScalar();
-                return result != null ? result.ToString() : "Bilinmiyor";
-            }
-        }
     }
 }
