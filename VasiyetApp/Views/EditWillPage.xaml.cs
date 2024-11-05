@@ -1,5 +1,6 @@
 using Microsoft.Maui.Controls;
 using System;
+using System.Linq;
 using VasiyetApp.Models;
 using VasiyetApp.Services;
 
@@ -22,7 +23,6 @@ namespace VasiyetApp.Views
             // Veriyi bileþenlere baðlama
             TitleEntry.Text = _currentWill.Title;
             DetailsEditor.Text = _currentWill.Details;
-            GuardianPicker.SelectedItem = _currentWill.GuardianName;
             PhotoImage.Source = _currentWill.FilePath;
 
             // Düzenle moduna girmeden tüm alanlarý devre dýþý býrakýyoruz
@@ -37,6 +37,10 @@ namespace VasiyetApp.Views
             // Vasi listesini yüklemek için DatabaseHelper veya ilgili servis metotlarýný çaðýrýn
             var guardians = DatabaseHelper.GetGuardians();
             GuardianPicker.ItemsSource = guardians;
+
+            // Mevcut vasiyi GuardianPicker'da seçili olarak göster
+            var selectedGuardian = guardians.FirstOrDefault(g => g.Id == _currentWill.GuardianId);
+            GuardianPicker.SelectedItem = selectedGuardian;
         }
 
         private void OnEditClicked(object sender, EventArgs e)
@@ -63,7 +67,7 @@ namespace VasiyetApp.Views
             // Veritabaný kaydý için güncellenmiþ verileri _currentWill nesnesine atýyoruz
             _currentWill.Title = TitleEntry.Text;
             _currentWill.Details = DetailsEditor.Text;
-            _currentWill.GuardianName = GuardianPicker.SelectedItem?.ToString();
+            _currentWill.GuardianId = ((Guardian)GuardianPicker.SelectedItem)?.Id;
 
             // Güncellenmiþ vasiyeti veri tabanýna kaydet
             DatabaseHelper.UpdateWill(_currentWill);
@@ -95,5 +99,11 @@ namespace VasiyetApp.Views
                 await Navigation.PopModalAsync(); // WillsPage'e geri dön
             }
         }
+        private async void OnCancelClicked(object sender, EventArgs e)
+        {
+            // Herhangi bir deðiþiklik yapmadan WillsPage'e geri dön
+            await Navigation.PopModalAsync();
+        }
+
     }
 }

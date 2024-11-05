@@ -14,7 +14,7 @@
 
         <!-- Vasi Seçimi -->
         <Label Text="Vasi" FontSize="Medium" FontAttributes="Bold" Margin="0,10,0,0" />
-        <Picker x:Name="GuardianPicker" Title="Vasi Seçin" IsEnabled="False" />
+        <Picker x:Name="GuardianPicker" Title="Vasi Seçin" IsEnabled="False" ItemDisplayBinding="{Binding Name}" />
 
         <!-- Eklenen Dosya/Fotograf -->
         <Label Text="Eklenen Dosya" FontSize="Medium" FontAttributes="Bold" Margin="0,10,0,0" />
@@ -26,6 +26,7 @@
             <Button Text="Düzenle" Clicked="OnEditClicked" />
             <Button x:Name="OnSaveButton" Text="Kaydet" Clicked="OnSaveClicked" IsEnabled="False" />
             <Button Text="Sil" Clicked="OnDeleteClicked" BackgroundColor="Red" TextColor="White" />
+            <Button Text="İptal" Clicked="OnCancelClicked" BackgroundColor="Gray" TextColor="White" />
         </StackLayout>
     </StackLayout>
 </ContentPage>

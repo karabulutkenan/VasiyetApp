@@ -178,13 +178,15 @@ namespace VasiyetApp.Services
             {
                 connection.Open();
                 var command = connection.CreateCommand();
-                command.CommandText = "INSERT INTO Guardians (Name, Email, UserId) VALUES (@Name, @Email, @UserId)";
+                command.CommandText = "INSERT INTO Guardians (Id, Name, Email, UserId) VALUES (@Id, @Name, @Email, @UserId)";
+                command.Parameters.AddWithValue("@Name", guardian.Id);
                 command.Parameters.AddWithValue("@Name", guardian.Name);
                 command.Parameters.AddWithValue("@Email", guardian.Email);
                 command.Parameters.AddWithValue("@UserId", guardian.UserId);
                 command.ExecuteNonQuery();
             }
         }
+
 
         public static List<Guardian> GetGuardians()
         {
