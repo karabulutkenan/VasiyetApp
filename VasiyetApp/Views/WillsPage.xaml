@@ -23,34 +23,45 @@
                          Clicked="OnUserIconTapped" />
         </Grid>
 
-        <!-- Main Content -->
-        <StackLayout Grid.Row="1" Padding="10">
-            <Grid ColumnSpacing="10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Button Text="Vasiyet Ekle" Clicked="OnAddWillClicked" BackgroundColor="#7ea1c1" TextColor="White" Grid.Column="0" />
-                <Button Text="Vasi Ekle" Clicked="OnAddGuardianClicked" BackgroundColor="#7ea1c1" TextColor="White" Grid.Column="1" />
-            </Grid>
-            <Label Text="EKLEDİĞİM VASİYETLER" FontSize="Large" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" Padding="10" TextColor="#333" />
+        <!-- Main Content with ScrollView -->
+        <ScrollView Grid.Row="1">
+            <StackLayout Padding="10">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Button Text="Vasiyet Ekle" Clicked="OnAddWillClicked" BackgroundColor="#7ea1c1" TextColor="White" Grid.Column="0" />
+                    <Button Text="Vasi Ekle" Clicked="OnAddGuardianClicked" BackgroundColor="#7ea1c1" TextColor="White" Grid.Column="1" />
+                </Grid>
+                <Label Text="EKLEDİĞİM VASİYETLER" FontSize="Large" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" Padding="10" TextColor="#333" />
 
-            <CollectionView x:Name="WillsCollectionView" SelectionMode="None">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Frame BorderColor="#7ea1c1" CornerRadius="8" Padding="10" Margin="5" HasShadow="True" BackgroundColor="White">
-                            <Frame.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnWillTapped" CommandParameter="{Binding .}" />
-                            </Frame.GestureRecognizers>
-                            <StackLayout>
-                                <Label Text="{Binding Title}" FontSize="Medium" FontAttributes="Bold" />
-                                <Label Text="{Binding Details}" FontSize="Small" TextColor="#666" />
-                            </StackLayout>
-                        </Frame>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                <CollectionView x:Name="WillsCollectionView" SelectionMode="None" BackgroundColor="#7ea1c1">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame BorderColor="#7ea1c1" CornerRadius="8" Padding="10" Margin="5" HasShadow="True" BackgroundColor="White">
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnWillTapped" CommandParameter="{Binding .}" />
+                                </Frame.GestureRecognizers>
+                                <StackLayout Spacing="5">
+                                    <HorizontalStackLayout>
+                                        <Label Text="Vasiyet Adı:" FontAttributes="Bold" TextColor="#333" FontSize="Medium"/>
+                                        <Label Text="{Binding Title}" FontSize="Medium" />
+                                    </HorizontalStackLayout>
 
-        </StackLayout>
+                                    <Label Text="Vasiyet Detayı:" FontAttributes="Bold" TextColor="#333" FontSize="Medium" Margin="0,5,0,0"/>
+                                    <Label Text="{Binding Details}" FontSize="Small" TextColor="#666" LineBreakMode="WordWrap" />
+
+                                    <HorizontalStackLayout Margin="0,5,0,0">
+                                        <Label Text="Vasi:" FontAttributes="Bold" TextColor="#333" FontSize="Medium"/>
+                                        <Label Text="{Binding GuardianName}" FontSize="Medium" TextColor="#666" />
+                                    </HorizontalStackLayout>
+                                </StackLayout>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </StackLayout>
+        </ScrollView>
     </Grid>
 </ContentPage>

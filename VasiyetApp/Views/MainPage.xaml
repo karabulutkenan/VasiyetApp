@@ -21,49 +21,97 @@
 
             <Label Grid.Column="1" Text="Ana Sayfa" FontSize="Medium" VerticalOptions="Center" HorizontalOptions="Center" />
 
-            <ImageButton Grid.Column="2" Source="user_icon.png" HeightRequest="30" WidthRequest="30" Aspect="AspectFit"
+            <!-- Yuvarlak Profil Fotoğrafı -->
+            <ImageButton x:Name="ProfilePhotoImage" Grid.Column="2"
+                         HeightRequest="40" WidthRequest="40"
+                         Aspect="AspectFill"
+                         BackgroundColor="Transparent"
+                         CornerRadius="20"
                          Clicked="OnUserIconTapped" />
         </Grid>
 
         <!-- Main Content -->
         <ScrollView Grid.Row="1">
-            <StackLayout Padding="10">
+            <StackLayout Padding="5">
                 <Label x:Name="WelcomeLabel" FontSize="Medium" Padding="10" HorizontalOptions="Center" />
                 <Label Text="VASY ile Keşfedin" TextColor="#7ea1c1" FontSize="Large" FontAttributes="Bold" Padding="10" HorizontalOptions="Center" />
-                <Label Text="VASİYETLERİM" FontSize="Small" Margin="5" FontAttributes="Bold" />
+                
+
+
+                <!-- Vasiyet Yok Uyarısı Bölümü -->
+                <StackLayout x:Name="NoWillsMessage" IsVisible="False" Padding="5" VerticalOptions="Center" HorizontalOptions="FillAndExpand" HeightRequest="300">
+                    <Frame BackgroundColor="#d3eaff" CornerRadius="15" Padding="5" HasShadow="True" HorizontalOptions="FillAndExpand" Margin="0,0,0,5">
+                        <StackLayout HorizontalOptions="Center" VerticalOptions="CenterAndExpand">
+                            <Image Source="alert_icon.png" HeightRequest="90" Margin="15" WidthRequest="90" HorizontalOptions="Center" Opacity="0.9"/>
+
+                            <Label Text="Hiç vasiyet eklenmedi" 
+                   FontSize="Medium" 
+                   TextColor="Black" 
+                   FontAttributes="Bold" 
+                   HorizontalOptions="Center"
+                   Margin="0,10,0,0"/>
+
+                            <Label Text="Lütfen yeni bir vasiyet ekleyin." 
+                   FontSize="Small" 
+                   TextColor="Gray" 
+                   HorizontalOptions="Center" 
+                   Margin="0,5,0,0"/>
+
+                            <Button Text="Vasiyet Ekle" 
+                    BackgroundColor="Salmon" 
+                    TextColor="White" 
+                    CornerRadius="10" 
+                    HorizontalOptions="FillAndExpand"
+                    Margin="25"
+                    Padding="5,5"
+                    Clicked="OnAddWillButtonClicked"/>
+                        </StackLayout>
+                    </Frame>
+                </StackLayout>
+
+
+
 
                 <!-- CarouselView -->
-                <CarouselView x:Name="WillsCarouselView" IndicatorView="WillsIndicatorView">
+                <CarouselView x:Name="WillsCarouselView" IndicatorView="WillsIndicatorView" HeightRequest="300" IsVisible="False">
                     <CarouselView.ItemTemplate>
                         <DataTemplate>
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-                                <Image Source="carousel_bg.png" Aspect="AspectFill" />
-                                <StackLayout Margin="20">
-                                    <Label Text="{Binding Title}" FontSize="Large" TextColor="White"  FontAttributes="Bold" />
-                                    <Label Text="{Binding Details}" FontSize="Medium" TextColor="White" />
-                                    <Label Text="{Binding GuardianName}" FontSize="Small" TextColor="White" />
+                            <Grid Padding="5">
+                                <Image Source="carousel_bg.png" Aspect="AspectFill" Opacity="0.9" />
+
+                                <!-- İçerik -->
+                                <StackLayout Margin="10">
+                                    <Grid ColumnDefinitions="Auto, *" Margin="0,5,0,5">
+                                        <Label Text="Vasiyet Adı: " FontSize="Medium" TextColor="Black" FontAttributes="Bold" Grid.Column="0"/>
+                                        <Label Text="{Binding Title}" FontSize="Medium" TextColor="White" FontAttributes="Bold" Grid.Column="1"/>
+                                    </Grid>
+                                    
+                                        <Label Text="Vasiyet Detayı: " FontSize="Medium" TextColor="Black" FontAttributes="Bold" />
+                                        <Label Text="{Binding Details}" FontSize="Medium" TextColor="White"  LineBreakMode="WordWrap" MaxLines="2"/>
+                                    
+                                    <Grid ColumnDefinitions="Auto, *" Margin="0,5,0,5">
+                                        <Label Text="Vasi Adı: " FontSize="Medium" TextColor="Black" FontAttributes="Bold" Grid.Column="0"/>
+                                        <Label Text="{Binding GuardianName}" FontSize="Medium" TextColor="White" Grid.Column="1"/>
+                                    </Grid>
                                 </StackLayout>
                             </Grid>
                         </DataTemplate>
                     </CarouselView.ItemTemplate>
                 </CarouselView>
-
+                
+                
                 <!-- IndicatorView -->
                 <IndicatorView x:Name="WillsIndicatorView" IndicatorColor="Gray" SelectedIndicatorColor="Black" HorizontalOptions="Center" />
 
                 <!-- Statik Bilgiler -->
-                <Frame BackgroundColor="#7ea1c1" Padding="10" Margin="5" CornerRadius="5">
+                <Frame x:Name="WillsCountFrame" BackgroundColor="Black" Padding="10" Margin="5" CornerRadius="5">
                     <Label x:Name="WillsCountLabel" FontSize="Title" TextColor="White"/>
                 </Frame>
-                <Frame BackgroundColor="#7ea1c1" Padding="10" Margin="5" CornerRadius="5">
+                <Frame x:Name="GuardiansCountFrame" BackgroundColor="#7ea1c1" Padding="10" Margin="5" CornerRadius="5">
                     <Label x:Name="GuardiansCountLabel" FontSize="Title" TextColor="White"/>
                 </Frame>
-                <Frame BackgroundColor="#7ea1c1" Padding="10" Margin="5" CornerRadius="5">
-                    <Label Text="Uyarılar: Haftalık" FontSize="Title" TextColor="White"/>
+                <Frame x:Name="AlertsFrame" BackgroundColor="Black" Padding="10" Margin="5" CornerRadius="5">
+                    <Label x:Name="AlertsLabel" Text="Uyarılar: Haftalık" FontSize="Title" TextColor="White"/>
                 </Frame>
             </StackLayout>
         </ScrollView>

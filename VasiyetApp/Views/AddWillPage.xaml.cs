@@ -90,7 +90,7 @@ namespace VasiyetApp.Views
                     Details = detailsEditor.Text,
                     FilePath = selectedFilePath,
                     UserId = App.CurrentUser.Id,
-                    GuardianId = selectedGuardian.Id
+                    GuardianId = selectedGuardian.Id // Seçilen Guardian’ýn Id’si atanýyor
                 };
 
                 DatabaseHelper.AddWill(will);
@@ -107,6 +107,7 @@ namespace VasiyetApp.Views
                 await DisplayAlert("Error", "An error occurred while saving the will.", "OK");
             }
         }
+
 
         private async void OnAddGuardianClicked(object sender, EventArgs e)
         {

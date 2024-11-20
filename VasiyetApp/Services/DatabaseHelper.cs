@@ -17,55 +17,71 @@ namespace VasiyetApp.Services
 
                 var command = connection.CreateCommand();
 
+                // Kullanıcı tablosu mevcut değilse oluştur
                 command.CommandText =
                 @"
-                    CREATE TABLE IF NOT EXISTS Users (
-                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    Name TEXT,
-                    Surname TEXT,
-                    TCKN TEXT,
-                    Phone TEXT,
-                    Username TEXT NOT NULL,
-                    Password TEXT NOT NULL,
-                    Email TEXT NOT NULL
-                    );
-                ";
+            CREATE TABLE IF NOT EXISTS Users (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Name TEXT,
+                Surname TEXT,
+                TCKN TEXT,
+                Phone TEXT,
+                Username TEXT NOT NULL,
+                Password TEXT NOT NULL,
+                Email TEXT NOT NULL,
+                ProfilePhotoPath TEXT
+            );
+        ";
                 command.ExecuteNonQuery();
 
-                if (!IsTableExists("Guardians"))
+                // ProfilePhotoPath alanı eksikse tabloyu güncelle
+                command.CommandText = "PRAGMA table_info(Users);";
+                bool profilePhotoExists = false;
+                using (var reader = command.ExecuteReader())
                 {
-                    command.CommandText =
-                    @"
-                        CREATE TABLE IF NOT EXISTS Guardians (
-                            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            Name TEXT,
-                            Email TEXT,
-                            UserId INTEGER,
-                            FOREIGN KEY(UserId) REFERENCES Users(Id)
-                        );
-                    ";
+                    while (reader.Read())
+                    {
+                        if (reader["name"].ToString() == "ProfilePhotoPath")
+                        {
+                            profilePhotoExists = true;
+                            break;
+                        }
+                    }
+                }
+
+                // ProfilePhotoPath sütunu mevcut değilse ekle
+                if (!profilePhotoExists)
+                {
+                    command.CommandText = "ALTER TABLE Users ADD COLUMN ProfilePhotoPath TEXT;";
                     command.ExecuteNonQuery();
                 }
 
-                if (!IsTableExists("Wills"))
-                {
-                    command.CommandText =
-                    @"
-                        CREATE TABLE IF NOT EXISTS Wills (
-                            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            Title TEXT,
-                            Details TEXT,
-                            FilePath TEXT,
-                            UserId INTEGER,
-                            GuardianId INTEGER,
-                            FOREIGN KEY(UserId) REFERENCES Users(Id),
-                            FOREIGN KEY(GuardianId) REFERENCES Guardians(Id)
-                        );
-                    ";
-                    command.ExecuteNonQuery();
-                }
+                // Guardians ve Wills tablolarını oluştur
+                command.CommandText =
+                @"
+            CREATE TABLE IF NOT EXISTS Guardians (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Name TEXT,
+                Email TEXT,
+                UserId INTEGER,
+                FOREIGN KEY(UserId) REFERENCES Users(Id)
+            );
+            
+            CREATE TABLE IF NOT EXISTS Wills (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Title TEXT,
+                Details TEXT,
+                FilePath TEXT,
+                UserId INTEGER,
+                GuardianId INTEGER,
+                FOREIGN KEY(UserId) REFERENCES Users(Id),
+                FOREIGN KEY(GuardianId) REFERENCES Guardians(Id)
+            );
+        ";
+                command.ExecuteNonQuery();
             }
         }
+
 
         public static bool IsTableExists(string tableName)
         {
@@ -85,7 +101,7 @@ namespace VasiyetApp.Services
             {
                 connection.Open();
                 var command = connection.CreateCommand();
-                command.CommandText = "INSERT INTO Users (Username, Name, Surname, TCKN, Phone, Email, Password) VALUES (@Username, @Name, @Surname, @TCKN, @Phone, @Email, @Password)";
+                command.CommandText = "INSERT INTO Users (Username, Name, Surname, TCKN, Phone, Email, Password, ProfilePhotoPath) VALUES (@Username, @Name, @Surname, @TCKN, @Phone, @Email, @Password, @ProfilePhotoPath)";
                 command.Parameters.AddWithValue("@Username", user.Username);
                 command.Parameters.AddWithValue("@Name", user.Name);
                 command.Parameters.AddWithValue("@Surname", user.Surname);
@@ -93,9 +109,13 @@ namespace VasiyetApp.Services
                 command.Parameters.AddWithValue("@Phone", user.Phone);
                 command.Parameters.AddWithValue("@Email", user.Email);
                 command.Parameters.AddWithValue("@Password", user.Password);
+                command.Parameters.AddWithValue("@ProfilePhotoPath", user.ProfilePhotoPath);
                 command.ExecuteNonQuery();
             }
         }
+
+        
+
 
         public static User ValidateUser(string username, string password)
         {
@@ -103,7 +123,7 @@ namespace VasiyetApp.Services
             {
                 connection.Open();
                 var command = connection.CreateCommand();
-                command.CommandText = "SELECT Id, Name, Username, Email FROM Users WHERE Username = @Username AND Password = @Password";
+                command.CommandText = "SELECT Id, Name, Username, Email, ProfilePhotoPath FROM Users WHERE Username = @Username AND Password = @Password";
                 command.Parameters.AddWithValue("@Username", username);
                 command.Parameters.AddWithValue("@Password", password);
 
@@ -116,13 +136,15 @@ namespace VasiyetApp.Services
                             Id = reader.GetInt32(0),
                             Name = reader.GetString(1),
                             Username = reader.GetString(2),
-                            Email = reader.GetString(3)
+                            Email = reader.GetString(3),
+                            ProfilePhotoPath = reader.IsDBNull(4) ? null : reader.GetString(4) // Profile photo path kontrolü
                         };
                     }
                 }
             }
             return null;
         }
+
 
         public static void AddWill(Will will)
         {
@@ -135,7 +157,12 @@ namespace VasiyetApp.Services
                 command.Parameters.AddWithValue("@Details", will.Details);
                 command.Parameters.AddWithValue("@FilePath", will.FilePath);
                 command.Parameters.AddWithValue("@UserId", will.UserId);
-                command.Parameters.AddWithValue("@GuardianId", will.GuardianId);
+
+                if (will.GuardianId.HasValue)
+                    command.Parameters.AddWithValue("@GuardianId", will.GuardianId.Value);
+                else
+                    command.Parameters.AddWithValue("@GuardianId", DBNull.Value);
+
                 command.ExecuteNonQuery();
             }
         }
@@ -178,15 +205,13 @@ namespace VasiyetApp.Services
             {
                 connection.Open();
                 var command = connection.CreateCommand();
-                command.CommandText = "INSERT INTO Guardians (Id, Name, Email, UserId) VALUES (@Id, @Name, @Email, @UserId)";
-                command.Parameters.AddWithValue("@Name", guardian.Id);
+                command.CommandText = "INSERT INTO Guardians (Name, Email, UserId) VALUES (@Name, @Email, @UserId)";
                 command.Parameters.AddWithValue("@Name", guardian.Name);
                 command.Parameters.AddWithValue("@Email", guardian.Email);
                 command.Parameters.AddWithValue("@UserId", guardian.UserId);
                 command.ExecuteNonQuery();
             }
         }
-
 
         public static List<Guardian> GetGuardians()
         {
@@ -254,7 +279,12 @@ namespace VasiyetApp.Services
                 command.Parameters.AddWithValue("@Title", will.Title);
                 command.Parameters.AddWithValue("@Details", will.Details);
                 command.Parameters.AddWithValue("@FilePath", will.FilePath);
-                command.Parameters.AddWithValue("@GuardianId", will.GuardianId);
+
+                if (will.GuardianId.HasValue)
+                    command.Parameters.AddWithValue("@GuardianId", will.GuardianId.Value);
+                else
+                    command.Parameters.AddWithValue("@GuardianId", DBNull.Value);
+
                 command.Parameters.AddWithValue("@Id", will.Id);
                 command.ExecuteNonQuery();
             }
@@ -300,6 +330,5 @@ namespace VasiyetApp.Services
 
             return guardians;
         }
-
     }
 }

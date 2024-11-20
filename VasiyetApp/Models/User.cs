@@ -16,6 +16,8 @@ namespace VasiyetApp.Models
         public string Surname { get; set; }
         public string TCKN { get; set; } // Türkiye Cumhuriyeti Kimlik Numarası
         public string Phone { get; set; }
-    }
 
+        // Profil fotoğrafı yolu
+        public string ProfilePhotoPath { get; set; }
+    }
 }

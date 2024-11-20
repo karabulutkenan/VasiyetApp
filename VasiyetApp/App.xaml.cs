@@ -15,9 +15,7 @@ public partial class App : Application
     public App()
     {
         InitializeComponent();
-
         InitializeDatabase();
-
         MainPage = new AppShell();
     }
 
@@ -37,36 +35,37 @@ public partial class App : Application
             var command = db.CreateCommand();
             command.CommandText =
             @"
-                CREATE TABLE IF NOT EXISTS Users (
-                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    Name TEXT,
-                    Surname TEXT,
-                    TCKN TEXT,
-                    Phone TEXT,
-                    Username TEXT NOT NULL,
-                    Password TEXT NOT NULL,
-                    Email TEXT NOT NULL
-                );
+            CREATE TABLE IF NOT EXISTS Users (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Name TEXT,
+                Surname TEXT,
+                TCKN TEXT,
+                Phone TEXT,
+                Username TEXT NOT NULL,
+                Password TEXT NOT NULL,
+                Email TEXT NOT NULL,
+                ProfilePhotoPath TEXT  -- Yeni profil fotoğrafı alanı eklendi
+            );
 
-                CREATE TABLE IF NOT EXISTS Wills (
-                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    UserId INTEGER NOT NULL,
-                    Title TEXT NOT NULL,
-                    Details TEXT NOT NULL,
-                    FilePath TEXT,
-                    GuardianId INTEGER,
-                    FOREIGN KEY (UserId) REFERENCES Users (Id),
-                    FOREIGN KEY (GuardianId) REFERENCES Users (Id)
-                );
+            CREATE TABLE IF NOT EXISTS Wills (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                UserId INTEGER NOT NULL,
+                Title TEXT NOT NULL,
+                Details TEXT NOT NULL,
+                FilePath TEXT,
+                GuardianId INTEGER,
+                FOREIGN KEY (UserId) REFERENCES Users (Id),
+                FOREIGN KEY (GuardianId) REFERENCES Guardians (Id)
+            );
 
-                    CREATE TABLE IF NOT EXISTS Guardians (
-                            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            Name TEXT,
-                            Email TEXT,
-                            UserId INTEGER,
-                            FOREIGN KEY(UserId) REFERENCES Users(Id)
-                        );
-            ";
+            CREATE TABLE IF NOT EXISTS Guardians (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Name TEXT,
+                Email TEXT,
+                UserId INTEGER,
+                FOREIGN KEY(UserId) REFERENCES Users(Id)
+            );
+        ";
             command.ExecuteNonQuery();
         }
     }

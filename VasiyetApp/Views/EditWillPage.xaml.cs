@@ -67,7 +67,16 @@ namespace VasiyetApp.Views
             // Veritabaný kaydý için güncellenmiþ verileri _currentWill nesnesine atýyoruz
             _currentWill.Title = TitleEntry.Text;
             _currentWill.Details = DetailsEditor.Text;
-            _currentWill.GuardianId = ((Guardian)GuardianPicker.SelectedItem)?.Id;
+
+            // Guardian seçiliyse Id deðerini alýyoruz
+            if (GuardianPicker.SelectedItem is Guardian selectedGuardian)
+            {
+                _currentWill.GuardianId = selectedGuardian.Id;
+            }
+            else
+            {
+                _currentWill.GuardianId = null;
+            }
 
             // Güncellenmiþ vasiyeti veri tabanýna kaydet
             DatabaseHelper.UpdateWill(_currentWill);
@@ -75,6 +84,7 @@ namespace VasiyetApp.Views
             await DisplayAlert("Baþarýlý", "Vasiyet baþarýyla güncellendi!", "Tamam");
             await Navigation.PopModalAsync(); // WillsPage'e geri dön
         }
+
 
         private async void OnChangePhotoClicked(object sender, EventArgs e)
         {
