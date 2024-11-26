@@ -19,24 +19,49 @@
             <ImageButton Grid.Column="0" Source="Resources/Images/exit_icon.png" HeightRequest="30" WidthRequest="30" Aspect="AspectFit"
                          Clicked="OnExitIconTapped" />
             <Label Grid.Column="1" Text="Vasiyetlerim" FontSize="Medium" VerticalOptions="Center" HorizontalOptions="Center" />
-            <ImageButton Grid.Column="2" Source="Resources/Images/user_icon.png" HeightRequest="30" WidthRequest="30" Aspect="AspectFit"
+
+            <!-- Yuvarlak Profil Fotoğrafı -->
+            <ImageButton x:Name="ProfilePhotoImage" Grid.Column="2"
+                         HeightRequest="40" WidthRequest="40"
+                         Aspect="AspectFill"
+                         BackgroundColor="Transparent"
+                         CornerRadius="20"
                          Clicked="OnUserIconTapped" />
         </Grid>
 
-        <!-- Main Content with ScrollView -->
+        <!-- Main Content -->
         <ScrollView Grid.Row="1">
-            <StackLayout Padding="10">
-                <Grid ColumnSpacing="10">
+            <StackLayout Padding="10" x:Name="MainContentStack">
+                <Grid ColumnSpacing="20" Padding="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Button Text="Vasiyet Ekle" Clicked="OnAddWillClicked" BackgroundColor="#7ea1c1" TextColor="White" Grid.Column="0" />
-                    <Button Text="Vasi Ekle" Clicked="OnAddGuardianClicked" BackgroundColor="#7ea1c1" TextColor="White" Grid.Column="1" />
-                </Grid>
-                <Label Text="EKLEDİĞİM VASİYETLER" FontSize="Large" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" Padding="10" TextColor="#333" />
 
-                <CollectionView x:Name="WillsCollectionView" SelectionMode="None" BackgroundColor="#7ea1c1">
+                    <!-- Vasiyet Ekle Butonu -->
+                    <StackLayout Grid.Column="0" HorizontalOptions="Center" VerticalOptions="Center">
+                        <ImageButton Source="icon_vasiyet_ekle.png" HeightRequest="75" WidthRequest="75"  Clicked="OnAddWillClicked" />
+                        <Label Text="Vasiyet Ekle" FontSize="Small" HorizontalOptions="Center" TextColor="#7ea1c1" />
+                    </StackLayout>
+
+                    <!-- Vasi Ekle Butonu -->
+                    <StackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center">
+                        <ImageButton Source="icon_vasi_ekle.png" HeightRequest="75" WidthRequest="75" BackgroundColor="Transparent" Clicked="OnAddGuardianClicked" />
+                        <Label Text="Vasi Ekle" FontSize="Small" HorizontalOptions="Center" TextColor="#7ea1c1" />
+                    </StackLayout>
+
+                    <!-- Vasilerim Butonu -->
+                    <StackLayout Grid.Column="2" HorizontalOptions="Center" VerticalOptions="Center">
+                        <ImageButton Source="icon_vasileri_gor.png" HeightRequest="75" WidthRequest="75" BackgroundColor="Transparent" Clicked="OnShowGuardiansClicked" />
+                        <Label Text="Vasilerim" FontSize="Small" HorizontalOptions="Center" TextColor="#7ea1c1" />
+                    </StackLayout>
+                </Grid>
+
+
+                <Label Text="EKLEDİĞİM VASİYETLER" FontSize="Medium" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" Padding="10" TextColor="#7ea1c1" />
+
+                <CollectionView x:Name="WillsCollectionView" SelectionMode="None" BackgroundColor="Transparent" IsVisible="True">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <Frame BorderColor="#7ea1c1" CornerRadius="8" Padding="10" Margin="5" HasShadow="True" BackgroundColor="White">
@@ -46,11 +71,11 @@
                                 <StackLayout Spacing="5">
                                     <HorizontalStackLayout>
                                         <Label Text="Vasiyet Adı:" FontAttributes="Bold" TextColor="#333" FontSize="Medium"/>
-                                        <Label Text="{Binding Title}" FontSize="Medium" />
+                                        <Label Text="{Binding Title}" FontSize="Medium" TextColor="#666"/>
                                     </HorizontalStackLayout>
 
                                     <Label Text="Vasiyet Detayı:" FontAttributes="Bold" TextColor="#333" FontSize="Medium" Margin="0,5,0,0"/>
-                                    <Label Text="{Binding Details}" FontSize="Small" TextColor="#666" LineBreakMode="WordWrap" />
+                                    <Label Text="{Binding Details}" FontSize="Small" TextColor="#666" LineBreakMode="WordWrap"/>
 
                                     <HorizontalStackLayout Margin="0,5,0,0">
                                         <Label Text="Vasi:" FontAttributes="Bold" TextColor="#333" FontSize="Medium"/>
@@ -61,6 +86,11 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+
+                <!-- Boş Liste Mesajı -->
+                <StackLayout x:Name="EmptyStateMessage" Padding="20" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="False">
+                    <Label Text="Hiç vasiyet eklenmedi. Lütfen vasiyet ekleyin." FontSize="Medium" TextColor="#333" HorizontalOptions="Center"/>
+                </StackLayout>
             </StackLayout>
         </ScrollView>
     </Grid>

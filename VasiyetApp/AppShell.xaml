@@ -5,9 +5,18 @@
     xmlns:local="clr-namespace:VasiyetApp.Views"
     Shell.FlyoutBehavior="Disabled">
 
+    <Shell.Resources>
+        <Style TargetType="Shell">
+            <!-- TabBar arka planı ve ikon renk müdahalesini kaldırıyoruz -->
+            <Setter Property="Shell.TabBarBackgroundColor" Value="Transparent" />
+            <Setter Property="Shell.TabBarForegroundColor" Value="Transparent" />
+            <Setter Property="Shell.TabBarTitleColor" Value="Default" />
+            <Setter Property="Shell.TabBarUnselectedColor" Value="Default" />
+        </Style>
+    </Shell.Resources>
+
     <ShellContent Route="LoginPage" ContentTemplate="{DataTemplate local:LoginPage}" />
 
-    <!-- Altta sabit TabBar konfigürasyonu -->
     <TabBar>
         <Tab Title="Ana Sayfa" Icon="home_icon.png">
             <ShellContent Route="MainPage" ContentTemplate="{DataTemplate local:MainPage}" />

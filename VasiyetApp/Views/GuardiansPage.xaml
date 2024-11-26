@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VasiyetApp.Views.GuardiansPage"
+             Title="Vasilerim">
+    <StackLayout Padding="10">
+        <Label Text="Vasilerim" FontSize="Large" FontAttributes="Bold" HorizontalOptions="Center" />
+        <CollectionView x:Name="GuardiansCollectionView">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame BorderColor="#7ea1c1" CornerRadius="8" Padding="10" Margin="5" HasShadow="True" BackgroundColor="White">
+                        <StackLayout>
+                            <Label Text="{Binding Name}" FontSize="Medium" FontAttributes="Bold" />
+                            <Label Text="{Binding Email}" FontSize="Small" TextColor="#666" />
+                            <HorizontalStackLayout Spacing="10">
+                                <Button Text="Düzenle" Clicked="OnEditGuardianClicked" CommandParameter="{Binding .}" />
+                                <Button Text="Sil" BackgroundColor="Red" TextColor="White" Clicked="OnDeleteGuardianClicked" CommandParameter="{Binding .}" />
+                            </HorizontalStackLayout>
+                        </StackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </StackLayout>
+</ContentPage>

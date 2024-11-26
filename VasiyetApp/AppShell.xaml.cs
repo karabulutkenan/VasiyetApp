@@ -19,6 +19,12 @@ namespace VasiyetApp
             Routing.RegisterRoute(nameof(WillsPage), typeof(WillsPage));
             Routing.RegisterRoute(nameof(TombstonePage), typeof(TombstonePage));
             Routing.RegisterRoute(nameof(SettingsPage), typeof(SettingsPage));
+            Routing.RegisterRoute(nameof(GuardiansPage), typeof(GuardiansPage));
+            Routing.RegisterRoute(nameof(EditWillPage), typeof(EditWillPage));
+            Routing.RegisterRoute(nameof(EditGuardianPage), typeof(EditGuardianPage));
+            Routing.RegisterRoute(nameof(AddWillPage), typeof(AddWillPage));
+            Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
+
         }
 
         // Kullanıcı ikonuna tıklanınca çalışacak olay

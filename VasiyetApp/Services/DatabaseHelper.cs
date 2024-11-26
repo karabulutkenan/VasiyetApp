@@ -302,6 +302,42 @@ namespace VasiyetApp.Services
             }
         }
 
+        public static void DeleteGuardian(int guardianId)
+        {
+            using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = "DELETE FROM Guardians WHERE Id = @Id";
+                command.Parameters.AddWithValue("@Id", guardianId);
+                command.ExecuteNonQuery();
+            }
+        }
+
+        // UpdateGuardian
+        public static void UpdateGuardian(Guardian guardian)
+        {
+            try
+            {
+                using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+                {
+                    connection.Open();
+                    var command = connection.CreateCommand();
+                    command.CommandText = "UPDATE Guardians SET Name = @Name, Email = @Email WHERE Id = @Id";
+                    command.Parameters.AddWithValue("@Name", guardian.Name);
+                    command.Parameters.AddWithValue("@Email", guardian.Email);
+                    command.Parameters.AddWithValue("@Id", guardian.Id);
+                    command.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"UpdateGuardian hata: {ex.Message}");
+            }
+        }
+
+
+
         public static List<Guardian> GetGuardiansByUserId(int userId)
         {
             var guardians = new List<Guardian>();
