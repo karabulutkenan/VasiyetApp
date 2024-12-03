@@ -68,15 +68,20 @@ namespace VasiyetApp.Services
             );
             
             CREATE TABLE IF NOT EXISTS Wills (
-                Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                Title TEXT,
-                Details TEXT,
-                FilePath TEXT,
-                UserId INTEGER,
-                GuardianId INTEGER,
-                FOREIGN KEY(UserId) REFERENCES Users(Id),
-                FOREIGN KEY(GuardianId) REFERENCES Guardians(Id)
-            );
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Title TEXT,
+    Details TEXT,
+    FilePath TEXT,
+    TextFilePath TEXT,
+    WordFilePath TEXT,
+    MediaFilePath TEXT,
+    DateAdded TEXT,
+    UserId INTEGER,
+    GuardianId INTEGER,
+    FOREIGN KEY(UserId) REFERENCES Users(Id),
+    FOREIGN KEY(GuardianId) REFERENCES Guardians(Id)
+);
+
         ";
                 command.ExecuteNonQuery();
             }
@@ -114,7 +119,7 @@ namespace VasiyetApp.Services
             }
         }
 
-        
+
 
 
         public static User ValidateUser(string username, string password)
@@ -152,16 +157,22 @@ namespace VasiyetApp.Services
             {
                 connection.Open();
                 var command = connection.CreateCommand();
-                command.CommandText = "INSERT INTO Wills (Title, Details, FilePath, UserId, GuardianId) VALUES (@Title, @Details, @FilePath, @UserId, @GuardianId)";
+                command.CommandText = @"INSERT INTO Wills (Title, Details, FilePath, TextFilePath, WordFilePath, MediaFilePath, DateAdded, UserId, GuardianId) 
+VALUES (@Title, @Details, @FilePath, @TextFilePath, @WordFilePath, @MediaFilePath, @DateAdded, @UserId, @GuardianId)";
                 command.Parameters.AddWithValue("@Title", will.Title);
                 command.Parameters.AddWithValue("@Details", will.Details);
-                command.Parameters.AddWithValue("@FilePath", will.FilePath);
+                command.Parameters.AddWithValue("@FilePath", will.FilePath ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@TextFilePath", will.TextFilePath ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@WordFilePath", will.WordFilePath ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@MediaFilePath", will.MediaFilePath ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@DateAdded", will.DateAdded.ToString("yyyy-MM-dd HH:mm:ss"));
                 command.Parameters.AddWithValue("@UserId", will.UserId);
 
                 if (will.GuardianId.HasValue)
                     command.Parameters.AddWithValue("@GuardianId", will.GuardianId.Value);
                 else
                     command.Parameters.AddWithValue("@GuardianId", DBNull.Value);
+
 
                 command.ExecuteNonQuery();
             }
@@ -175,7 +186,9 @@ namespace VasiyetApp.Services
             {
                 connection.Open();
                 var command = connection.CreateCommand();
-                command.CommandText = "SELECT Id, Title, Details, FilePath, UserId, GuardianId FROM Wills WHERE UserId = @UserId";
+                command.CommandText = @"SELECT Id, Title, Details, FilePath, TextFilePath, WordFilePath, MediaFilePath, DateAdded, UserId, GuardianId 
+FROM Wills WHERE UserId = @UserId";
+
                 command.Parameters.AddWithValue("@UserId", userId);
 
                 using (var reader = command.ExecuteReader())
@@ -188,10 +201,15 @@ namespace VasiyetApp.Services
                             Title = reader.GetString(1),
                             Details = reader.GetString(2),
                             FilePath = reader.IsDBNull(3) ? null : reader.GetString(3),
-                            UserId = reader.GetInt32(4),
-                            GuardianId = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5),
-                            GuardianName = GetGuardianNameById(reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5))
+                            TextFilePath = reader.IsDBNull(4) ? null : reader.GetString(4),
+                            WordFilePath = reader.IsDBNull(5) ? null : reader.GetString(5),
+                            MediaFilePath = reader.IsDBNull(6) ? null : reader.GetString(6),
+                            DateAdded = DateTime.Parse(reader.GetString(7)),
+                            UserId = reader.GetInt32(8),
+                            GuardianId = reader.IsDBNull(9) ? (int?)null : reader.GetInt32(9),
+                            GuardianName = GetGuardianNameById(reader.IsDBNull(9) ? (int?)null : reader.GetInt32(9))
                         });
+
                     }
                 }
             }
@@ -275,10 +293,24 @@ namespace VasiyetApp.Services
             {
                 connection.Open();
                 var command = connection.CreateCommand();
-                command.CommandText = "UPDATE Wills SET Title = @Title, Details = @Details, FilePath = @FilePath, GuardianId = @GuardianId WHERE Id = @Id";
+                command.CommandText = @"
+            UPDATE Wills 
+            SET 
+                Title = @Title, 
+                Details = @Details, 
+                FilePath = @FilePath, 
+                TextFilePath = @TextFilePath, 
+                WordFilePath = @WordFilePath, 
+                MediaFilePath = @MediaFilePath, 
+                GuardianId = @GuardianId 
+            WHERE Id = @Id";
+
                 command.Parameters.AddWithValue("@Title", will.Title);
                 command.Parameters.AddWithValue("@Details", will.Details);
-                command.Parameters.AddWithValue("@FilePath", will.FilePath);
+                command.Parameters.AddWithValue("@FilePath", will.FilePath ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@TextFilePath", will.TextFilePath ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@WordFilePath", will.WordFilePath ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@MediaFilePath", will.MediaFilePath ?? (object)DBNull.Value);
 
                 if (will.GuardianId.HasValue)
                     command.Parameters.AddWithValue("@GuardianId", will.GuardianId.Value);
@@ -289,6 +321,7 @@ namespace VasiyetApp.Services
                 command.ExecuteNonQuery();
             }
         }
+
 
         public static void DeleteWill(int willId)
         {
