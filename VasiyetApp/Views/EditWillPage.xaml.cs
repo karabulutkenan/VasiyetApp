@@ -1,5 +1,6 @@
 using Microsoft.Maui.Controls;
 using System;
+using System.IO;
 using System.Linq;
 using VasiyetApp.Models;
 using VasiyetApp.Services;
@@ -15,85 +16,138 @@ namespace VasiyetApp.Views
             InitializeComponent();
             _currentWill = selectedWill;
             BindWillDetails();
-            LoadGuardians(); // Mevcut vasiler yüklenir
         }
 
         private void BindWillDetails()
         {
-            // Veriyi bileþenlere baðlama
+            // Mevcut bilgileri doldur
             TitleEntry.Text = _currentWill.Title;
             DetailsEditor.Text = _currentWill.Details;
-            PhotoImage.Source = _currentWill.FilePath;
 
-            // Düzenle moduna girmeden tüm alanlarý devre dýþý býrakýyoruz
-            TitleEntry.IsEnabled = false;
-            DetailsEditor.IsEnabled = false;
-            GuardianPicker.IsEnabled = false;
-            ChangePhotoButton.IsVisible = false;
-        }
+            // Elle yazýlmýþ metin
+            if (!string.IsNullOrEmpty(_currentWill.TextContent))
+            {
+                WrittenWillEditor.Text = _currentWill.TextContent;
+                WrittenWillEditor.IsVisible = true;
+                WrittenWillStatus.IsVisible = false;
+            }
+            else
+            {
+                WrittenWillEditor.Text = string.Empty;
+                WrittenWillEditor.IsVisible = false;
+                WrittenWillStatus.Text = "Elle yazýlmýþ metin yok.";
+                WrittenWillStatus.IsVisible = true;
+            }
 
-        private void LoadGuardians()
-        {
-            // Vasi listesini yüklemek için DatabaseHelper veya ilgili servis metotlarýný çaðýrýn
+            // Eklenen dosya
+            if (!string.IsNullOrEmpty(_currentWill.WordFilePath))
+            {
+                AttachedFileLabel.Text = Path.GetFileName(_currentWill.WordFilePath);
+            }
+            else
+            {
+                AttachedFileLabel.Text = "Eklenen dosya yok.";
+            }
+
+            // Eklenen medya
+            if (!string.IsNullOrEmpty(_currentWill.MediaFilePath))
+            {
+                AttachedMediaImage.Source = _currentWill.MediaFilePath;
+                AttachedMediaImage.IsVisible = true;
+                MediaStatus.IsVisible = false;
+            }
+            else
+            {
+                AttachedMediaImage.IsVisible = false;
+                MediaStatus.Text = "Medya eklenmemiþ.";
+                MediaStatus.IsVisible = true;
+            }
+
+            // Vasi
             var guardians = DatabaseHelper.GetGuardians();
             GuardianPicker.ItemsSource = guardians;
+            GuardianPicker.SelectedItem = guardians.FirstOrDefault(g => g.Id == _currentWill.GuardianId);
 
-            // Mevcut vasiyi GuardianPicker'da seçili olarak göster
-            var selectedGuardian = guardians.FirstOrDefault(g => g.Id == _currentWill.GuardianId);
-            GuardianPicker.SelectedItem = selectedGuardian;
+            // Baþlangýçta düzenleme kapalý
+            SetEditMode(false);
+        }
+
+        private void SetEditMode(bool isEditable)
+        {
+            TitleEntry.IsEnabled = isEditable;
+            DetailsEditor.IsEnabled = isEditable;
+            WrittenWillEditor.IsEnabled = isEditable;
+            GuardianPicker.IsEnabled = isEditable;
+            OnSaveButton.IsEnabled = isEditable;
+            ChangeFileButton.IsVisible = isEditable;
+            ChangeMediaButton.IsVisible = isEditable;
         }
 
         private void OnEditClicked(object sender, EventArgs e)
         {
-            // Düzenle butonuna basýldýðýnda tüm alanlarý düzenlenebilir hale getiriyoruz
-            TitleEntry.IsEnabled = true;
-            DetailsEditor.IsEnabled = true;
-            GuardianPicker.IsEnabled = true;
-            ChangePhotoButton.IsVisible = true;
-
-            // "Düzenle" butonunu devre dýþý, "Kaydet" butonunu aktif hale getiriyoruz
-            ((Button)sender).IsEnabled = false;
-            OnSaveButton.IsEnabled = true;
+            SetEditMode(true);
         }
 
         private async void OnSaveClicked(object sender, EventArgs e)
         {
-            // Deðiþiklikleri kaydederken tüm alanlarý devre dýþý býrakýyoruz
-            TitleEntry.IsEnabled = false;
-            DetailsEditor.IsEnabled = false;
-            GuardianPicker.IsEnabled = false;
-            ChangePhotoButton.IsVisible = false;
-
-            // Veritabaný kaydý için güncellenmiþ verileri _currentWill nesnesine atýyoruz
-            _currentWill.Title = TitleEntry.Text;
-            _currentWill.Details = DetailsEditor.Text;
-
-            // Guardian seçiliyse Id deðerini alýyoruz
-            if (GuardianPicker.SelectedItem is Guardian selectedGuardian)
+            try
             {
-                _currentWill.GuardianId = selectedGuardian.Id;
+                _currentWill.Title = TitleEntry.Text;
+                _currentWill.Details = DetailsEditor.Text;
+
+                // Elle yazýlmýþ metni kaydet
+                if (!string.IsNullOrWhiteSpace(WrittenWillEditor.Text))
+                {
+                    _currentWill.TextContent = WrittenWillEditor.Text;
+                }
+
+                // Vasi seçimi
+                if (GuardianPicker.SelectedItem is Guardian selectedGuardian)
+                {
+                    _currentWill.GuardianId = selectedGuardian.Id;
+                }
+
+                // Veritabanýný güncelle
+                DatabaseHelper.UpdateWill(_currentWill);
+
+                await DisplayAlert("Baþarýlý", "Vasiyet baþarýyla güncellendi.", "Tamam");
+
+                // Düzenleme modundan çýk
+                SetEditMode(false);
             }
-            else
+            catch (Exception ex)
             {
-                _currentWill.GuardianId = null;
+                await DisplayAlert("Hata", $"Bir hata oluþtu: {ex.Message}", "Tamam");
             }
-
-            // Güncellenmiþ vasiyeti veri tabanýna kaydet
-            DatabaseHelper.UpdateWill(_currentWill);
-
-            await DisplayAlert("Baþarýlý", "Vasiyet baþarýyla güncellendi!", "Tamam");
-            await Navigation.PopModalAsync(); // WillsPage'e geri dön
         }
 
-
-        private async void OnChangePhotoClicked(object sender, EventArgs e)
+        private async void OnChangeFileClicked(object sender, EventArgs e)
         {
-            // Galeriden dosya seçme iþlemi
-            var file = await FilePicker.PickAsync();
-            if (file != null)
+            var result = await FilePicker.PickAsync();
+            if (result != null)
             {
-                _currentWill.FilePath = file.FullPath;
-                PhotoImage.Source = _currentWill.FilePath;
+                _currentWill.WordFilePath = result.FullPath;
+                AttachedFileLabel.Text = Path.GetFileName(result.FullPath);
+            }
+        }
+
+        private async void OnChangeMediaClicked(object sender, EventArgs e)
+        {
+            var result = await FilePicker.PickAsync(new PickOptions
+            {
+                PickerTitle = "Medya Seçin",
+                FileTypes = new FilePickerFileType(
+                    new Dictionary<DevicePlatform, IEnumerable<string>>
+                    {
+                        { DevicePlatform.Android, new[] { "image/*", "video/*" } },
+                        { DevicePlatform.iOS, new[] { "public.image", "public.movie" } }
+                    })
+            });
+
+            if (result != null)
+            {
+                _currentWill.MediaFilePath = result.FullPath;
+                AttachedMediaImage.Source = result.FullPath;
             }
         }
 
@@ -102,18 +156,15 @@ namespace VasiyetApp.Views
             bool isConfirmed = await DisplayAlert("Sil", "Bu vasiyeti silmek istediðinizden emin misiniz?", "Evet", "Hayýr");
             if (isConfirmed)
             {
-                // Vasiyeti veri tabanýndan sil
                 DatabaseHelper.DeleteWill(_currentWill.Id);
-
                 await DisplayAlert("Silindi", "Vasiyet silindi.", "Tamam");
-                await Navigation.PopModalAsync(); // WillsPage'e geri dön
+                await Navigation.PopModalAsync();
             }
         }
+
         private async void OnCancelClicked(object sender, EventArgs e)
         {
-            // Herhangi bir deðiþiklik yapmadan WillsPage'e geri dön
             await Navigation.PopModalAsync();
         }
-
     }
 }

@@ -24,6 +24,7 @@
         <Tab Title="Vasiyetlerim" Icon="will_icon.png">
             <ShellContent Route="WillsPage" ContentTemplate="{DataTemplate local:WillsPage}" />
         </Tab>
+
         <Tab Title="Mezar Taşı" Icon="tombstone_icon.png">
             <ShellContent Route="TombstonePage" ContentTemplate="{DataTemplate local:TombstonePage}" />
         </Tab>

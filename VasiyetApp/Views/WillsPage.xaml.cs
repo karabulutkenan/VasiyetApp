@@ -77,10 +77,12 @@ namespace VasiyetApp.Views
                 return;
             }
 
-            var addWillPage = new AddWillPage();
-            addWillPage.WillAdded += OnWillAdded;
-            await Navigation.PushModalAsync(addWillPage);
+            // AddWillPage'e Shell rotasý üzerinden yönlendirme
+            await Shell.Current.GoToAsync(nameof(AddWillPage));
         }
+
+
+
 
         private void OnWillAdded(object sender, Will newWill)
         {

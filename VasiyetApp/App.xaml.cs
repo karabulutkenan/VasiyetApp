@@ -48,15 +48,19 @@ public partial class App : Application
         );
 
         CREATE TABLE IF NOT EXISTS Wills (
-            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-            UserId INTEGER NOT NULL,
-            Title TEXT NOT NULL,
-            Details TEXT NOT NULL,
-            FilePath TEXT,
-            GuardianId INTEGER,
-            FOREIGN KEY (UserId) REFERENCES Users (Id),
-            FOREIGN KEY (GuardianId) REFERENCES Guardians (Id)
-        );
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Title TEXT,
+    Details TEXT,
+    FilePath TEXT,
+    TextContent TEXT,
+    WordFilePath TEXT,
+    MediaFilePath TEXT,
+    DateAdded TEXT,
+    UserId INTEGER,
+    GuardianId INTEGER,
+    FOREIGN KEY(UserId) REFERENCES Users(Id),
+    FOREIGN KEY(GuardianId) REFERENCES Guardians(Id)
+);
 
         CREATE TABLE IF NOT EXISTS Guardians (
             Id INTEGER PRIMARY KEY AUTOINCREMENT,

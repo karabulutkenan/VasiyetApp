@@ -1,68 +1,66 @@
-using System;
-using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
+using System.Collections.ObjectModel;
 using VasiyetApp.Models;
 using VasiyetApp.Services;
-using System.Collections.ObjectModel;
 
 namespace VasiyetApp.Views
 {
     public partial class AddWillPage : ContentPage
     {
-        private string selectedFilePath;
-        public event EventHandler<Will> WillAdded;
+        private string selectedWordFilePath;
+        private string selectedMediaFilePath;
 
         public ObservableCollection<Guardian> Guardians { get; set; }
 
         public AddWillPage()
         {
             InitializeComponent();
-            try
+            Guardians = new ObservableCollection<Guardian>(DatabaseHelper.GetGuardiansByUserId(App.CurrentUser.Id));
+            guardianPicker.ItemsSource = Guardians;
+        }
+
+        private void OnWriteWillClicked(object sender, EventArgs e)
+        {
+            // Yazý alanýný aç, butonu pasifleþtir
+            WriteWillArea.IsVisible = true;
+            OnWriteWillClickedButton.IsEnabled = false;
+        }
+
+        private void OnCancelWriteWillClicked(object sender, EventArgs e)
+        {
+            // Alaný gizle ve temizle
+            WriteWillArea.IsVisible = false;
+            WillTextEditor.Text = string.Empty;
+            OnWriteWillClickedButton.IsEnabled = true;
+        }
+
+        private async void OnAttachWordFileClicked(object sender, EventArgs e)
+        {
+            var result = await FilePicker.PickAsync();
+            if (result != null)
             {
-                Guardians = new ObservableCollection<Guardian>(DatabaseHelper.GetGuardiansByUserId(App.CurrentUser.Id));
-                guardianPicker.ItemsSource = Guardians;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error in AddWillPage constructor: {ex.Message}");
-                DisplayAlert("Error", "An error occurred while initializing the page.", "OK");
+                selectedWordFilePath = result.FullPath;
+                selectedFileName.Text = $"Seçilen dosya: {result.FileName}";
             }
         }
 
-        private async void OnChooseFileClicked(object sender, EventArgs e)
+        private async void OnAttachMediaClicked(object sender, EventArgs e)
         {
-            try
+            var result = await FilePicker.PickAsync(new PickOptions
             {
-                var customFileType = new FilePickerFileType(
+                PickerTitle = "Medya Seçin",
+                FileTypes = new FilePickerFileType(
                     new Dictionary<DevicePlatform, IEnumerable<string>>
                     {
-                        { DevicePlatform.iOS, new[] { "public.image" } },
-                        { DevicePlatform.Android, new[] { "image/*" } },
-                        { DevicePlatform.WinUI, new[] { ".jpg", ".png" } }
-                    });
+                        { DevicePlatform.Android, new[] { "image/*", "video/*" } },
+                        { DevicePlatform.iOS, new[] { "public.image", "public.movie" } }
+                    })
+            });
 
-                var options = new PickOptions
-                {
-                    PickerTitle = "Dosya Seçiniz",
-                    FileTypes = customFileType,
-                };
-
-                var result = await FilePicker.Default.PickAsync(options);
-                if (result != null)
-                {
-                    selectedFilePath = result.FullPath;
-                    selectedFileName.Text = $"Seçilen dosya: {result.FileName}";
-                }
-                else
-                {
-                    selectedFilePath = null;
-                    selectedFileName.Text = "Seçilen dosya: Yok";
-                }
-            }
-            catch (Exception ex)
+            if (result != null)
             {
-                Console.WriteLine($"Error in OnChooseFileClicked: {ex.Message}");
-                await DisplayAlert("Error", "An error occurred while choosing the file.", "OK");
+                selectedMediaFilePath = result.FullPath;
+                selectedFileName.Text = $"Seçilen dosya: {result.FileName}";
             }
         }
 
@@ -82,57 +80,38 @@ namespace VasiyetApp.Views
                     return;
                 }
 
+                // En az bir ekleme kontrolü
+                if (string.IsNullOrWhiteSpace(WillTextEditor.Text) &&
+                    string.IsNullOrEmpty(selectedWordFilePath) &&
+                    string.IsNullOrEmpty(selectedMediaFilePath))
+                {
+                    await DisplayAlert("Hata", "Lütfen en az bir içerik ekleyin.", "Tamam");
+                    return;
+                }
+
                 var selectedGuardian = (Guardian)guardianPicker.SelectedItem;
 
+                // Yeni vasiyet oluþturma
                 var will = new Will
                 {
                     Title = titleEntry.Text,
                     Details = detailsEditor.Text,
-                    FilePath = selectedFilePath,
+                    TextContent = WriteWillArea.IsVisible ? WillTextEditor.Text : null,
+                    WordFilePath = selectedWordFilePath,
+                    MediaFilePath = selectedMediaFilePath,
                     UserId = App.CurrentUser.Id,
-                    GuardianId = selectedGuardian.Id // Seçilen Guardian’ýn Id’si atanýyor
+                    GuardianId = selectedGuardian.Id,
+                    DateAdded = DateTime.Now
                 };
 
                 DatabaseHelper.AddWill(will);
 
-                // WillAdded olayýný tetikle
-                WillAdded?.Invoke(this, will);
-
                 await DisplayAlert("Baþarýlý", "Vasiyet baþarýyla kaydedildi.", "Tamam");
-                await Shell.Current.Navigation.PopModalAsync();
+                await Shell.Current.GoToAsync("..");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in OnSaveClicked: {ex.Message}");
-                await DisplayAlert("Error", "An error occurred while saving the will.", "OK");
-            }
-        }
-
-
-        private async void OnAddGuardianClicked(object sender, EventArgs e)
-        {
-            try
-            {
-                var addGuardianPage = new AddGuardianPage();
-                addGuardianPage.GuardianAdded += OnGuardianAdded;
-                await Navigation.PushModalAsync(addGuardianPage);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error in OnAddGuardianClicked: {ex.Message}");
-                await DisplayAlert("Error", "An error occurred while adding a guardian.", "OK");
-            }
-        }
-
-        private void OnGuardianAdded(object sender, Guardian newGuardian)
-        {
-            try
-            {
-                Guardians.Add(newGuardian);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error in OnGuardianAdded: {ex.Message}");
+                await DisplayAlert("Hata", $"Bir hata oluþtu: {ex.Message}", "Tamam");
             }
         }
     }

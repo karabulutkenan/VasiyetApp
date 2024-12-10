@@ -24,7 +24,7 @@ namespace VasiyetApp
             Routing.RegisterRoute(nameof(EditGuardianPage), typeof(EditGuardianPage));
             Routing.RegisterRoute(nameof(AddWillPage), typeof(AddWillPage));
             Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
-
+           
         }
 
         // Kullanıcı ikonuna tıklanınca çalışacak olay
