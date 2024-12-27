@@ -64,6 +64,13 @@ namespace VasiyetApp.Views
             }
         }
 
+        private async void OnCancelClicked(object sender, EventArgs e)
+        {
+            // Kullanýcýyý önceki sayfaya yönlendirme
+            await Shell.Current.GoToAsync("..");
+        }
+
+
         private async void OnSaveClicked(object sender, EventArgs e)
         {
             try

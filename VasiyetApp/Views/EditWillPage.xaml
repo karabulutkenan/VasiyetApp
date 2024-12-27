@@ -12,11 +12,11 @@
 
             <!-- Detay -->
             <Label Text="Vasiyet Detayı" FontSize="Medium" FontAttributes="Bold" Margin="0,10,0,0" />
-            <Editor x:Name="DetailsEditor" IsEnabled="False" HeightRequest="100" />
+            <Editor x:Name="DetailsEditor" IsEnabled="False" HeightRequest="250" />
 
             <!-- Elle Yazılmış Metin -->
             <Label Text="Elle Yazılmış Metin" FontSize="Medium" FontAttributes="Bold" Margin="0,10,0,0" />
-            <Editor x:Name="WrittenWillEditor" IsEnabled="False" HeightRequest="100" />
+            <Editor x:Name="WrittenWillEditor" IsEnabled="False" HeightRequest="250" />
             <Label x:Name="WrittenWillStatus" Text="Elle yazılmış metin yok." IsVisible="False" FontSize="Small" TextColor="Gray" />
 
             <!-- Eklenen Dosya -->

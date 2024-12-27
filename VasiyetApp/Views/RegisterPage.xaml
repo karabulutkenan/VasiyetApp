@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="VasiyetApp.Views.RegisterPage"
              Title="Kayıt Ol">
+    <ScrollView>
     <StackLayout Padding="30" Spacing="20">
 
         <!-- Profil Fotoğrafı Seçme Alanı -->
@@ -30,4 +31,5 @@
 
         <Button Text="Kayıt Ol" Clicked="OnRegisterClicked" BackgroundColor="#7ea1c1" TextColor="White"/>
     </StackLayout>
+    </ScrollView>
 </ContentPage>

@@ -9,6 +9,22 @@ namespace VasiyetApp.Services
     {
         static string dbPath = App.DbPath;
 
+        public static void ClearDatabase()
+        {
+            try
+            {
+                if (File.Exists(App.DbPath)) // Veritabanı dosyası var mı?
+                {
+                    File.Delete(App.DbPath); // Eğer varsa sil
+                    Console.WriteLine("Eski veritabanı dosyası silindi.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Veritabanı temizlenirken hata oluştu: {ex.Message}");
+            }
+        }
+
         public static void InitializeDatabase()
         {
             using (var connection = new SqliteConnection($"Data Source={dbPath}"))

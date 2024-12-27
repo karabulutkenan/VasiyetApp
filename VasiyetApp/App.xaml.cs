@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using Microsoft.Maui.Storage;  // FileSystem için gerekli
-using VasiyetApp.Models;  // User modelini kullanmak için
+using VasiyetApp.Models;
+using VasiyetApp.Services;// User modelini kullanmak için
 
 namespace VasiyetApp;
 
@@ -9,14 +10,50 @@ public partial class App : Application
     // Veritabanı dosyasının yolunu düzelt
     public static string DbPath = Path.Combine(FileSystem.AppDataDirectory, "vasiyet.db");
 
+
+
     // CurrentUser özelliği
     public static User CurrentUser { get; set; }
 
     public App()
     {
         InitializeComponent();
-        InitializeDatabase();
-        MainPage = new AppShell();
+        // Sadece ilk yüklemede çalışacak kod
+        bool isFirstRun = Preferences.Get("IsFirstRun", true);
+
+        if (isFirstRun)
+        {
+            DatabaseHelper.ClearDatabase(); // Veritabanını temizle
+            Preferences.Set("IsFirstRun", false);
+
+            // Kullanıcıya uyarı mesajı göster
+            MainPage = new ContentPage
+            {
+                Content = new Label
+                {
+                    Text = "Veritabanı sıfırlandı. Uygulama kullanıma hazır.",
+                    VerticalOptions = LayoutOptions.Center,
+                    HorizontalOptions = LayoutOptions.Center,
+                    FontSize = 16,
+                    
+                }
+            };
+
+            // Mesajı göstermek için kısa bir gecikme ekleyin
+            Task.Delay(2000).ContinueWith(t =>
+            {
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    MainPage = new AppShell(); // Normal ana sayfaya geçiş
+                });
+            });
+        }
+        else
+        {
+            InitializeDatabase();
+            MainPage = new AppShell();
+        }
+        
     }
 
     private void InitializeDatabase()
